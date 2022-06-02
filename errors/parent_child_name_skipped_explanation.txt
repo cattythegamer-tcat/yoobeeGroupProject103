@@ -1,0 +1,1 @@
+When registering a new parent, during the child inputting, the child name is skipped. This was due to me using getline() instead of cin <<, since there could be spaces in a childs full name. To fix this, I ran cin.ignore() before getline(), to flush out the "\n" previously outputted to the terminal.
