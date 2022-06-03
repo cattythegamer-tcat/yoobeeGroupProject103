@@ -16,16 +16,23 @@ using std::vector;
 struct student {
     string name;
     int gender;
-    vector<int[2]> subjectGrades; // [SubjectID, gradeNum (0:NA, 1:A, 2:M, 3:E)
+    vector<vector<int>> subjectGrades; // [SubjectID, gradeNum (0:NA, 1:A, 2:M, 3:E)
+    student(string fullName, int identifiedGender, vector<vector<int>> subjects) {
+        name = fullName;
+        gender = identifiedGender;
+        subjectGrades = subjects;
+    }
 };
 
 // These structs will be stored individually when saved to the hard-drive
 struct classroom {
     int classNumber;
     vector<student> students;
+    classroom(int classNum, vector<student> studentInfo) {
+        classNumber = classNum;
+        students = studentInfo;
+    }
 };
-// Overarching student records storage
-vector<classroom> classroomRecords;
 
 // Caregiver data storage, used when registering a new parent
 struct caregiver {
@@ -124,6 +131,7 @@ void registerTeacher() {
 // Main Function
 int main()
 {
+    recordExamples();
     // Startup Menu
     registerParent();
     return 0; // Placeholder
