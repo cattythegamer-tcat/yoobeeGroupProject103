@@ -9,9 +9,10 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-// Using namespace declarations
 using std::string;
 using std::vector;
+using std::ofstream;
+using std::ifstream;
 
 struct student {
     string name;
@@ -58,6 +59,45 @@ struct child {
     }
 };
 
+// Overarching student records storage
+vector<classroom> classroomRecords = {
+    classroom(1, {
+        student("John Doe", 1, {{1, 1}, {2, 2}, {3, 3}}),
+        student("Jane Doe", 1, {{1, 2}, {2, 3}, {3, 1}}),
+        student("Jack Doe", 0, {{1, 3}, {2, 1}, {3, 2}})
+        }
+    ),
+    classroom(2, {
+        student("Jill Doe", 1, {{1, 1}, {2, 2}, {3, 3}}),
+        student("Jared Doe", 0, {{1, 2}, {2, 3}, {3, 1}}),
+        student("Jenny Doe", 1, {{1, 3}, {2, 1}, {3, 2}})
+        }
+    ),
+    classroom(3, {
+        student("Jasmine Doe", 1, {{1, 1}, {2, 2}, {3, 3}}),
+        student("Jasper Doe", 0, {{1, 2}, {2, 3}, {3, 1}}),
+        student("Josie Doe", 1, {{1, 3}, {2, 1}, {3, 2}})
+        }
+    )
+};
+
+void saveClassrooms() {
+    ofstream fileManager;
+    for (int classroom = 0; classroom < classroomRecords.size(); classroom++) {
+        fileManager.open("class" + std::to_string(classroomRecords[classroom].classNumber) + ".csv");
+        for (int studentNum = 0; studentNum < classroomRecords[classroom].students.size(); studentNum++) {
+            fileManager << classroomRecords[classroom].students[studentNum].name
+                << "," << classroomRecords[classroom].students[studentNum].gender;
+            for (int subject = 0; subject < classroomRecords[classroom].students[studentNum].subjectGrades.size(); subject++) {
+                fileManager << "," << classroomRecords[classroom].students[studentNum].subjectGrades[subject][0]
+                    << "," << classroomRecords[classroom].students[studentNum].subjectGrades[subject][1];
+            }
+            fileManager << endl;
+        }
+        fileManager.close();
+    }
+}
+
 // Adds a new parent
 void registerParent() {
     classroomRecords[0].students[0].subjectGrades[0][0];
@@ -66,7 +106,7 @@ void registerParent() {
     char addChild = 'y'; // When this is 'n', stops adding children to children vector
     int gender, birthDay, birthMonth, birthYear, contactNum;
     vector<child> children;
-    
+
     // General parent data assignment
     cout << "Parent details:\n\nEnter name below:\n";
     cin.ignore(); // Needed as parent name can have spaces
@@ -131,7 +171,7 @@ void registerTeacher() {
 // Main Function
 int main()
 {
-    recordExamples();
+    saveClassrooms();
     // Startup Menu
     registerParent();
     return 0; // Placeholder
