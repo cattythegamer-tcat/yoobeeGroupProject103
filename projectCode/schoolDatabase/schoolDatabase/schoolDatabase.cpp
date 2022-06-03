@@ -83,19 +83,23 @@ vector<classroom> classroomRecords = {
 
 void saveClassrooms() {
     ofstream fileManager;
-    for (int classroom = 0; classroom < classroomRecords.size(); classroom++) {
-        fileManager.open("class" + std::to_string(classroomRecords[classroom].classNumber) + ".csv");
-        for (int studentNum = 0; studentNum < classroomRecords[classroom].students.size(); studentNum++) {
-            fileManager << classroomRecords[classroom].students[studentNum].name
-                << "," << classroomRecords[classroom].students[studentNum].gender;
-            for (int subject = 0; subject < classroomRecords[classroom].students[studentNum].subjectGrades.size(); subject++) {
-                fileManager << "," << classroomRecords[classroom].students[studentNum].subjectGrades[subject][0]
-                    << "," << classroomRecords[classroom].students[studentNum].subjectGrades[subject][1];
+    for (int room = 0; room < classroomRecords.size(); room++) {
+        fileManager.open("class" + std::to_string(classroomRecords[room].classNumber) + ".csv");
+        for (int studentNum = 0; studentNum < classroomRecords[room].students.size(); studentNum++) {
+            fileManager << classroomRecords[room].students[studentNum].name
+                << "," << classroomRecords[room].students[studentNum].gender;
+            for (int sub = 0; sub < classroomRecords[room].students[studentNum].subjectGrades.size(); sub++) {
+                fileManager << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][0]
+                    << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][1];
             }
             fileManager << endl;
         }
         fileManager.close();
     }
+}
+
+void loadClassrooms() {
+
 }
 
 // Adds a new parent
