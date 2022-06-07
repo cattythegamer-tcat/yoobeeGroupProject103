@@ -4,6 +4,8 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <regex>
+#include <sstream>
 // Using namespaces
 using std::cin;
 using std::cout;
@@ -61,6 +63,8 @@ struct child {
 
 // Overarching student records storage
 vector<classroom> classroomRecords = {
+    // Placeholder values
+    /*
     classroom(1, {
         student("John Doe", 1, {{1, 1}, {2, 2}, {3, 3}}),
         student("Jane Doe", 1, {{1, 2}, {2, 3}, {3, 1}}),
@@ -79,38 +83,84 @@ vector<classroom> classroomRecords = {
         student("Josie Doe", 1, {{1, 3}, {2, 1}, {3, 2}})
         }
     )
+    */
 };
 
 // Saves all classroom data stored in classroomRecords
 void saveClassrooms() {
-    // Opens output filestream for the masterClassList (Containing data of all class file locations)
+    // Opens masterClassList file, containing data of all class file locations
     ofstream masterClassList;
     masterClassList.open("masterClassList.csv", ofstream::out | ofstream::trunc); // Clears current masterFile
 
-    ofstream fileManager; // Opens output filestream for classes
+    ofstream classManager; // Opener for each class file
     for (int room = 0; room < classroomRecords.size(); room++) { // Loops through each classroom
         // Opens a new file for each class, as requested in the assess. requirements
-        fileManager.open("class" + std::to_string(classroomRecords[room].classNumber) + ".csv");
+        classManager.open("class" + std::to_string(classroomRecords[room].classNumber) + ".csv");
         for (int studentNum = 0; studentNum < classroomRecords[room].students.size(); studentNum++) { // Loops through each student in given class
             // Writes student data to class file (One line per student)
-            fileManager << classroomRecords[room].students[studentNum].name
+            classManager << classroomRecords[room].students[studentNum].name
                 << "," << classroomRecords[room].students[studentNum].gender;
             for (int sub = 0; sub < classroomRecords[room].students[studentNum].subjectGrades.size(); sub++) {
-                fileManager << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][0]
+                classManager << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][0]
                     << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][1];
             }
-            fileManager << endl;
+            classManager << endl;
         }
-        fileManager.close(); // Closes class file
-
-        masterClassList << "class" << classroomRecords[room].classNumber << ".csv" << endl; // Saves class file location to masterClassList
+        classManager.close();
+        // Saves class file location to masterClassList
+        masterClassList << "class" << classroomRecords[room].classNumber << ".csv" << endl; // NOTE: FileLoc stored instead of classNum for futureproofing, to allow for differing directiories
     }
-    masterClassList.close(); // Closes masterClassList file.
+    masterClassList.close();
 }
 
 // Loads all classroom data from filesystem
 void loadClassrooms() {
-    ifstream filemanager;
+    // Open file containing all class file locations
+    ifstream masterClassList;
+    masterClassList.open("masterClassList.csv");
+    // Opener for each class file
+    ifstream classManager;
+    // File line variables
+    string classFile, studentInfo;
+    while (std::getline(masterClassList, classFile)) { // Loops through each class
+        classManager.open(classFile);
+        // Seperates class number from class file
+        std::stringstream numStream; // Stream needed since class number may be > 1 digits
+        std::regex_replace( std::ostream_iterator<char>(numStream), classFile.begin(),
+            classFile.end(), (std::regex) "[^0-9]", "");
+        int classNum = std::stoi(numStream.str()); // Converts stringStream to integer
+        // Seperates each students data
+        vector<student> classStudents;
+        while (std::getline(classManager, studentInfo)) { // Loops through each student in class
+            // Student info variable declarations
+            string studentName;
+            vector<vector<int>> studentGrades;
+            int studentGender = 0, dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
+            for (char& c : studentInfo)
+            {
+                if (c == ',') { // End of csv column
+                    dataPos++;
+                    continue;
+                }
+                switch (dataPos) { // Used for future proofing, since extra student data may be stored in future
+                case 0: // Name
+                    studentName += c;
+                    break;
+                case 1: // Gender
+                    studentGender = c - '0';
+                    break;
+                default: // Grades
+                    if (dataPos % 2 == 0) studentGrades.push_back({ c - '0' });
+                    else studentGrades[studentGrades.size() - 1].push_back(c - '0');
+                    break;
+                }
+            }
+            classStudents.push_back(student(studentName, studentGender, studentGrades));
+        }
+        classroomRecords.push_back(classroom(classNum, classStudents));
+        classManager.close();
+    }
+    masterClassList.close();
 }
 
 // Adds a new parent
@@ -186,8 +236,6 @@ void registerTeacher() {
 // Main Function
 int main()
 {
+    loadClassrooms();
     saveClassrooms();
-    // Startup Menu
-    registerParent();
-    return 0; // Placeholder
 }
