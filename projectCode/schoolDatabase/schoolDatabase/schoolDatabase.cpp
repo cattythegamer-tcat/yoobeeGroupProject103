@@ -81,11 +81,18 @@ vector<classroom> classroomRecords = {
     )
 };
 
+// Saves all classroom data stored in classroomRecords
 void saveClassrooms() {
-    ofstream fileManager;
-    for (int room = 0; room < classroomRecords.size(); room++) {
+    // Opens output filestream for the masterClassList (Containing data of all class file locations)
+    ofstream masterClassList;
+    masterClassList.open("masterClassList.csv", ofstream::out | ofstream::trunc); // Clears current masterFile
+
+    ofstream fileManager; // Opens output filestream for classes
+    for (int room = 0; room < classroomRecords.size(); room++) { // Loops through each classroom
+        // Opens a new file for each class, as requested in the assess. requirements
         fileManager.open("class" + std::to_string(classroomRecords[room].classNumber) + ".csv");
-        for (int studentNum = 0; studentNum < classroomRecords[room].students.size(); studentNum++) {
+        for (int studentNum = 0; studentNum < classroomRecords[room].students.size(); studentNum++) { // Loops through each student in given class
+            // Writes student data to class file (One line per student)
             fileManager << classroomRecords[room].students[studentNum].name
                 << "," << classroomRecords[room].students[studentNum].gender;
             for (int sub = 0; sub < classroomRecords[room].students[studentNum].subjectGrades.size(); sub++) {
@@ -94,12 +101,16 @@ void saveClassrooms() {
             }
             fileManager << endl;
         }
-        fileManager.close();
+        fileManager.close(); // Closes class file
+
+        masterClassList << "class" << classroomRecords[room].classNumber << ".csv" << endl; // Saves class file location to masterClassList
     }
+    masterClassList.close(); // Closes masterClassList file.
 }
 
+// Loads all classroom data from filesystem
 void loadClassrooms() {
-
+    ifstream filemanager;
 }
 
 // Adds a new parent

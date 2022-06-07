@@ -1,0 +1,3 @@
+﻿  schoolDatabase.cpp
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(118,55): warning C4834: discarding return value of function with 'nodiscard' attribute
+  schoolDatabase.vcxproj -> C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe
