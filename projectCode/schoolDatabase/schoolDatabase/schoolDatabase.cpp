@@ -17,20 +17,6 @@ using std::vector;
 using std::ofstream;
 using std::ifstream;
 
-//Teacher Variables - NOTE: THIS NEEDS TO BE REMOVED BY SPRINT 2 END
-int teaAcc = 0;
-string teachName[10];
-char teachGen[10];
-int teachDoB[10];
-string teachEmail[10];
-int teachPho[10];
-int teachClassNum[10];
-int teachYLvl[10];
-string teachUn[10];
-string Passw;
-string Passw2;
-string teachPassw[10];
-
 struct student {
     string name;
     int gender;
@@ -244,45 +230,59 @@ void parentRegister() {
 
 // Adds a new teacher
 void teacherRegister() {
+    string teachName;
+    char teachGen;
+    int teachDoB;
+    string teachEmail;
+    int teachPho;
+    int teachClassNum;
+    int teachYLvl;
+    string teachUn;
+    string Passw;
+    string Passw2;
+    string teachPassw;
+    bool looping = true;
+
     system("cls");
 
     cout << "\n\nWhat is your First name: ";
     cin.ignore();
-    getline(cin, teachName[teaAcc]);
+    getline(cin, teachName);
 
-RedoGender: // goto loops will make us lose points, since they're bad practice to use, using a while loop or try/catch would be better
-    cout << "\n\nWhat is your gender (m = Mr./f = Mrs.): ";
-    cin >> teachGen[teaAcc];
-    if (teachGen[teaAcc] != 'm' || teachGen[teaAcc] != 'f') {
-        goto RedoGender;
-        cout << "That is not a valid option: ";
+    while (looping == true) {
+        cout << "\n\nWhat is your gender (m = Mr./f = Mrs.): ";
+        cin >> teachGen;
+        if (teachGen != 'm' || teachGen != 'f')
+            cout << "That is not a valid option: \n\n";
+        else
+            looping = false;
     }
 
     cout << "\n\nWhat is you phone number: ";
-    cin >> teachPho[teaAcc];
+    cin >> teachPho;
 
     cout << "\n\nWhat is your classroom number: ";
-    cin >> teachClassNum[teaAcc];
+    cin >> teachClassNum;
 
     cout << "\n\nWhat year level do you teach: ";
-    cin >> teachYLvl[teaAcc];
+    cin >> teachYLvl;
 
     cout << "\n\nWhat will your username be: ";
-    cin >> teachUn[teaAcc];
+    cin >> teachUn;
 
-RedoPassword:
-    cout << "\n\nPlease enter your password: ";
-    cin >> Passw;
-    cout << "\n\nEnter it again: ";
-    cin >> Passw2;
-    if (Passw != Passw2) {
-        cout << "\n\nThe passwords do no match. Try again";
-        goto RedoPassword;
+    looping = true;
+    while (looping == true) {
+        cout << "\n\nPlease enter your password: ";
+        cin >> Passw;
+        cout << "\n\nEnter it again: ";
+        cin >> Passw2;
+        if (Passw != Passw2) 
+            cout << "\n\nThe passwords do no match. Try again";
+        else {
+            teachPassw = Passw;
+            looping = false;
+        }
     }
-    else
-        teachPassw[teaAcc] = Passw;
-
-    teaAcc++;
 }
 
 void adminMenu() {
@@ -290,13 +290,74 @@ void adminMenu() {
     int controls = 0;
     bool looping = true;
 
+    cout << "\n1. Create Student Record\n";
+
     while (looping = true) {
         switch (controls) {
         case 1:
-
+            adminRecordStudent();
         default:
             break;
         }
+    }
+}
+
+// Creates a student record (Admin)
+void adminRecordStudent() {
+    bool makingRecords = true;
+
+    while (makingRecords = true) {
+
+        bool loopAgain = true;
+        string studentsName;
+        int studentsGender, subject, subjectGrade, control;
+        vector<vector<int>> studentsSubjects; // Creates vectors within a vector that allows us to easily transfer data back to the structure
+        vector<int> newSubject; // This allows us to store the subject and the grade under one variable
+
+        system("cls"); // Clears all previous code in termonal to avoid screen clutter
+
+        cout << "\nWhat is the students full name: ";
+        cin.ignore(); // Allows the use of spaces in the string 
+        getline(cin, studentsName);
+        
+        while (loopAgain = true) {
+            cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
+            cin >> studentsGender;
+            if (studentsGender != 1 || 2 || 3) 
+                cout << "\nThat is not a valid. Please try again.";
+            else
+                loopAgain = false; // Breaks the loop if given a valid answer
+        }
+        
+        for (subject = 0; subject < 3; subject++) {
+            cout << "\n" << 3 - subject << " subjects left to register.";
+            switch (subject) {
+            case 0:
+                cout << "\nCurrently registering Maths. ";
+            case 1:
+                cout << "\nCurrently registering English. ";
+            case 2:
+                cout << "\nCurrently registering History. ";
+            }
+            cout << "What was " << studentsName << "'s grade (0:NA, 1:A, 2:M, 3:E): ";
+            cin >> subjectGrade;
+
+            if (studentsGender != 0 || 1 || 2 || 3) {
+                subject--;
+                cout << "\nThat is not a valid. Please try again.";
+            }
+            else {
+                newSubject.push_back(subject);
+                newSubject.push_back(subjectGrade);
+                studentsSubjects.push_back(newSubject);
+            }
+        }
+        student newStudent = student(studentsName, studentsGender, studentsSubjects);
+
+        cout << "\n\nDo you want to create another student record (1. Yes, 2. No):";
+        cin >> control;
+        if (control != 1)
+            makingRecords = false;
     }
 }
 
@@ -455,7 +516,7 @@ int main()
             break;
         case 7:
             cout << "You have chosen to Exit the program, goodbye!\n";
-            mainMenuActive == false;
+            mainMenuActive = false;
             return 0;
 
         }
