@@ -181,17 +181,30 @@ void loadClassrooms() {
 void parentRegister() {
     classroomRecords[0].students[0].subjectGrades[0][0];
     // Parent variable declarations
-    string name, email, username, password;
+    string name, email, username, password = "", rePassword = "";
     char addChild = 'y'; // When this is 'n', stops adding children to children vector
     int gender, birthDay, birthMonth, birthYear, contactNum;
     vector<child> children;
 
-    // General parent data assignment
+    // General account info
     cout << "Parent details:\n\nEnter name below:\n";
     cin.ignore(); // Needed as parent name can have spaces
     getline(cin, name);
     cout << "Enter email: ";
     cin >> email;
+    cout << "Enter username: ";
+    cin >> username;
+
+    // Password
+    do {
+        cout << "Enter password: ";
+        cin >> password;
+        cout << "Re-enter password: ";
+        cin >> rePassword;
+        if (password != rePassword) cout << "Passwords don't match!\n";
+    } while (password != rePassword);
+
+    // Personal details
     cout << "Enter gender (1:Male, 2:Female, 3:Other): ";
     cin >> gender;
     cout << "Enter day of birth (1-31): ";
@@ -239,7 +252,10 @@ void parentRegister() {
         cout << "Add another child (y\\n)? ";
         cin >> addChild;
     }
-    // Saving parent to hard-drive would be done here
+
+    ofstream parentAccounts;
+    parentAccounts.open("parentAccounts.csv", std::ios::app);
+    parentAccounts << ""
 }
 
 // Adds a new teacher
