@@ -17,6 +17,20 @@ using std::vector;
 using std::ofstream;
 using std::ifstream;
 
+//Teacher Variables - NOTE: THIS NEEDS TO BE REMOVED BY SPRINT 2 END
+int teaAcc = 0;
+string teachName[10];
+char teachGen[10];
+int teachDoB[10];
+string teachEmail[10];
+int teachPho[10];
+int teachClassNum[10];
+int teachYLvl[10];
+string teachUn[10];
+string Passw;
+string Passw2;
+string teachPassw[10];
+
 struct student {
     string name;
     int gender;
@@ -230,7 +244,60 @@ void parentRegister() {
 
 // Adds a new teacher
 void teacherRegister() {
-    return; // Placeholder
+    system("cls");
+
+    cout << "\n\nWhat is your First name: ";
+    cin.ignore();
+    getline(cin, teachName[teaAcc]);
+
+RedoGender: // goto loops will make us lose points, since they're bad practice to use, using a while loop or try/catch would be better
+    cout << "\n\nWhat is your gender (m = Mr./f = Mrs.): ";
+    cin >> teachGen[teaAcc];
+    if (teachGen[teaAcc] != 'm' || teachGen[teaAcc] != 'f') {
+        goto RedoGender;
+        cout << "That is not a valid option: ";
+    }
+
+    cout << "\n\nWhat is you phone number: ";
+    cin >> teachPho[teaAcc];
+
+    cout << "\n\nWhat is your classroom number: ";
+    cin >> teachClassNum[teaAcc];
+
+    cout << "\n\nWhat year level do you teach: ";
+    cin >> teachYLvl[teaAcc];
+
+    cout << "\n\nWhat will your username be: ";
+    cin >> teachUn[teaAcc];
+
+RedoPassword:
+    cout << "\n\nPlease enter your password: ";
+    cin >> Passw;
+    cout << "\n\nEnter it again: ";
+    cin >> Passw2;
+    if (Passw != Passw2) {
+        cout << "\n\nThe passwords do no match. Try again";
+        goto RedoPassword;
+    }
+    else
+        teachPassw[teaAcc] = Passw;
+
+    teaAcc++;
+}
+
+void adminMenu() {
+
+    int controls = 0;
+    bool looping = true;
+
+    while (looping = true) {
+        switch (controls) {
+        case 1:
+
+        default:
+            break;
+        }
+    }
 }
 
 void parentLogin()
