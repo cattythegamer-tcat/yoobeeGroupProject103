@@ -1,5 +1,5 @@
 ﻿  schoolDatabase.cpp
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(182,55): warning C4834: discarding return value of function with 'nodiscard' attribute
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(325,44): warning C4101: 'upcomingInput': unreferenced local variable
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(458,28): warning C4553: '==': result of expression not used; did you intend '='?
-  schoolDatabase.vcxproj -> C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(187,55): warning C4834: discarding return value of function with 'nodiscard' attribute
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(414,44): warning C4101: 'upcomingInput': unreferenced local variable
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(549,28): warning C4553: '==': result of expression not used; did you intend '='?
+  schoolDatabase.vcxproj -> C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe

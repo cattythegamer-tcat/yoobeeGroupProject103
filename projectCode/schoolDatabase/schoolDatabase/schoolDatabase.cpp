@@ -1,4 +1,3 @@
-#include <iostream>
 // schoolDatabase.cpp : This file contains the 'main' function. Program execution begins and ends there.
 // Includes
 #include <iostream>
@@ -7,6 +6,11 @@
 #include <string>
 #include <regex>
 #include <sstream>
+#include <algorithm>
+
+// Hashing Library for password security
+#include "SHA256.h"
+
 // Using namespaces
 using std::cin;
 using std::cout;
@@ -31,6 +35,7 @@ string Passw;
 string Passw2;
 string teachPassw[10];
 
+// Student data storage, used to store the grades for a student
 struct student {
     string name;
     int gender;
@@ -253,9 +258,39 @@ void parentRegister() {
         cin >> addChild;
     }
 
+    string hashedPassword = username + password;
+    SHA256 sha;
+    sha.update(hashedPassword);
+    uint8_t* digest = sha.digest();
+    password = SHA256::toString(digest);
+
+    // Load parent account file
     ofstream parentAccounts;
-    parentAccounts.open("parentAccounts.csv", std::ios::app);
-    parentAccounts << ""
+    parentAccounts.open("parentAccounts.csv", std::ios::app); // Appends new parent to end of file
+    // Write new parent info to file
+    parentAccounts << username << ","
+        << password << ","
+        << name << ","
+        << email << ","
+        << gender << ","
+        << birthDay << ","
+        << birthMonth << ","
+        << birthYear << ","
+        << contactNum << ",";
+    // Adds children info to parent file
+    for (int childNum = 0; childNum < children.size(); childNum++) {
+        parentAccounts << "["
+            << children[childNum].name << ","
+            << children[childNum].classNum;
+        for (int guardianNum = 0; guardianNum < children[childNum].caregivers.size(); guardianNum++) {
+            parentAccounts << "," << children[childNum].caregivers[guardianNum].name << ","
+                << children[childNum].caregivers[guardianNum].phoneNum;
+        }
+        parentAccounts << "],";
+    }
+    // Close parent file
+    parentAccounts << endl;
+    parentAccounts.close();
 }
 
 // Adds a new teacher
@@ -316,9 +351,54 @@ void adminMenu() {
     }
 }
 
+// Parent signin
 void parentLogin()
 {
-    cout << "Parent Login Page\n";
+    // Account String Declarations
+    string username, password, fetchedInfo;
+    // Stores all username-password hashes in parentAccount DB
+    vector<string> validAccounts;
+    // Fetches parentAccounts file for populating validAccounts Vector
+    ifstream parentAccounts;
+    parentAccounts.open("parentAccounts.csv");
+    // Populates validAccounts Vector with all account hashes
+    while (std::getline(parentAccounts, fetchedInfo)) {
+        string fetchedPassword;
+        int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
+        for (char& c : fetchedInfo)
+        {
+            if (c == ',') { // End of csv column
+                dataPos++;
+                if (dataPos == 2) break;
+                continue;
+            }
+            if (dataPos == 1) fetchedPassword += c;
+        }
+        validAccounts.push_back(fetchedPassword);
+    }
+    parentAccounts.close();
+    // User signin input system
+    char attemptingSignin = 'y';
+    while (attemptingSignin != 'n') {
+        cout << "Please enter your username: ";
+        cin >> username;
+        cout << "Please enter your password: ";
+        cin >> password;
+        // Forms username-password hash combo
+        string hashedAccount = username + password;
+        SHA256 sha;
+        sha.update(hashedAccount);
+        uint8_t* digest = sha.digest();
+        hashedAccount = SHA256::toString(digest);
+        // Checks if hash combo is a valid account
+        if (std::find(validAccounts.begin(), validAccounts.end(), hashedAccount) != validAccounts.end()) {
+            cout << "\nSigned in successfully!\n";
+            return;
+        }
+        cout << "\nUsername or password is incorrect.\nTry again (y/n)? "; // Allows for exit if user can't remember password
+        cin >> attemptingSignin;
+    }
+    cout << "\nUnsuccessful!";
 }
 
 void teacherLogin()
@@ -447,8 +527,10 @@ int main()
             {
             case 1:
                 parentRegister();
+                break;
             case 2:
                 parentLogin();
+                break;
             }
             break;
         case 4:
