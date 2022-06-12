@@ -105,6 +105,25 @@ vector<classroom> classroomRecords = {
     )*/
 };
 
+// Convert these vectors to files if time allows
+vector<string> admins = {
+    "Jayden", "e5c45796ab12b638d3ed06c71747625f018a74c3c83b32ef4429a9c0b5da5a95", // letmein123
+    "Conor", "bb8dced85e0a71d285e69ebe6edc5387093202f1f07ddba5de85c2eb95313e9a", // smurf01
+    "Kevin", "a9ecab845fa6559c418a6cf96e16cca21eb14d3a7b9d0539e3a890f920028fa6" // defaultGreen
+};
+
+vector<string> subjectOrder = {
+    "Maths",
+    "Science",
+    "English",
+    "Health",
+    "P.E",
+    "Digital Technologies",
+    "Art",
+    "Social Studies",
+    "Music"
+};
+
 // Saves all classroom data stored in classroomRecords
 void saveClassrooms() {
     // Opens masterClassList file, containing data of all class file locations
@@ -210,7 +229,7 @@ void parentRegister() {
     } while (password != rePassword);
 
     // Personal details
-    cout << "Enter gender (1:Male, 2:Female, 3:Other): ";
+    cout << "Enter gender (1:Male, 2:Female, 3:Non-Binary): ";
     cin >> gender;
     cout << "Enter day of birth (1-31): ";
     cin >> birthDay;
@@ -272,7 +291,7 @@ void parentRegister() {
         << password << ","
         << name << ","
         << email << ","
-        << gender << ","
+        << gender - 1 << ","
         << birthDay << ","
         << birthMonth << ","
         << birthYear << ","
@@ -286,7 +305,7 @@ void parentRegister() {
             parentAccounts << "," << children[childNum].caregivers[guardianNum].name << ","
                 << children[childNum].caregivers[guardianNum].phoneNum;
         }
-        parentAccounts << "],";
+        parentAccounts << ",";
     }
     // Close parent file
     parentAccounts << endl;
@@ -336,17 +355,169 @@ RedoPassword:
     teaAcc++;
 }
 
-void adminMenu() {
-
-    int controls = 0;
-    bool looping = true;
-
-    while (looping = true) {
-        switch (controls) {
+void adminMenu(string username) {
+    system("cls");
+    cout << "Welcome " << username << "!\n";
+    while (true) {
+        int adminOption;
+        cout << "\n1. View class record/s\n" <<
+            "2. View parent record/s\n" <<
+            "3. View student record/s\n" <<
+            "4. Return to main menu\n: ";
+        cin >> adminOption;
+        switch(adminOption) {
         case 1:
+            if (classroomRecords.size() == 0) {
+                cout << "Alert! No classes exist!";
+                continue;
+            }
+            int classOption;
+            cout << "Please enter the class number, or type \"0\" for a list of all class numbers: ";
+            cin >> classOption;
+            if (classOption == 0) {
+                cout << "Classes: " << classroomRecords[0].classNumber;
+                for (int classroomIdx = 1; classroomIdx < classroomRecords.size(); classroomIdx++) {
+                    cout << ", " << classroomRecords[classroomIdx].classNumber;
+                }
+                cout << "\n";
+            }
+            else {
+                for (int classroomIdx = 0; classroomIdx < classroomRecords.size(); classroomIdx++) {
+                    if (classroomRecords[classroomIdx].classNumber == classOption) {
+                        int rollCount = classroomRecords[classroomIdx].students.size();
+                        string genderOptions[3] = { "Male", "Female", "Non-Binary" };
+                        string gradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence"};
+                        string teacherName = "Unknown";
+                        // Need to find actual teacher name here
 
-        default:
+                        // Display general class info
+                        cout << "Classroom " << classOption << " records:\n" <<
+                            "Teacher: " << teacherName << 
+                            "\nRoll (" << rollCount << "):";
+                        // Display individual student info
+                        for (int studentIdx = 0; studentIdx < rollCount; studentIdx++) {
+                            cout << "\n\t" << classroomRecords[classroomIdx].students[studentIdx].name <<
+                                " (" << 
+                                genderOptions[classroomRecords[classroomIdx].students[studentIdx].gender] <<
+                                "): \n";
+                            int subjectGradeCount = classroomRecords[classroomIdx].students[studentIdx].subjectGrades.size();
+                            for (int subjectIdx = 0; subjectIdx < subjectGradeCount; subjectIdx++) {
+                                vector<int> subjectGrade = classroomRecords[classroomIdx].students[studentIdx].subjectGrades[subjectIdx];
+                                cout << "\t\t" << subjectOrder[subjectGrade[0]] << ": "
+                                    << gradeOptions[subjectGrade[1]] << "\n";
+                            }
+                        }
+                    }
+                }
+            }
             break;
+        case 4:
+            system("cls");
+            return;
+        case 2:
+            ifstream parentAccounts;
+            parentAccounts.open("parentAccounts.csv");
+            if (!parentAccounts) {
+                cout << "No parent accounts exist!";
+                continue;
+            }
+
+            string name;
+            cout << "Please enter parent name, or type \"ALL\" to view all parent names: ";
+            cin.ignore(); // Needed as parent name can have spaces
+            getline(cin, name);
+
+            if (name == "ALL") {
+                cout << "Parents:";
+                string fetchedParent;
+                while (std::getline(parentAccounts, fetchedParent)) {
+                    string fetchedName;
+                    int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
+                    for (char& c : fetchedParent)
+                    {
+                        if (c == ',') dataPos++;
+                        else if (dataPos == 2) fetchedName += c;
+                    }
+                    cout << "\n\t" << fetchedName;
+                }
+                break;
+            }
+            else {
+                string fetchedParent, fetchedName;
+                while (std::getline(parentAccounts, fetchedParent)) {
+                    fetchedName = "";
+                    string username, email, gender, birthDay, birthMonth, birthYear, phoneNumber;
+                    vector<vector<string>> childrenInfo;
+                    int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
+                    for (char& c : fetchedParent)
+                    {
+                        if (c == ',') {
+                            dataPos++;
+                            if (dataPos >= 10) childrenInfo[childrenInfo.size() - 1].push_back("");
+                            continue;
+                        }
+                        switch (dataPos) {
+                        case 0:
+                            username += c;
+                            break;
+                        case 1:
+                            continue;
+                        case 2:
+                            fetchedName += c;
+                            break;
+                        case 3:
+                            email += c;
+                            break;
+                        case 4:
+                            gender += c;
+                            break;
+                        case 5:
+                            birthDay += c;
+                            break;
+                        case 6:
+                            birthMonth += c;
+                            break;
+                        case 7:
+                            birthYear += c;
+                            break;
+                        case 8:
+                            phoneNumber += c;
+                            break;
+                        default:
+                            if (c == '[') {
+                                if (childrenInfo.size() > 0) {
+                                    childrenInfo[childrenInfo.size() - 1].pop_back();
+                                }
+                                childrenInfo.push_back({ "" });
+                            } else childrenInfo[childrenInfo.size() - 1][childrenInfo[childrenInfo.size() - 1].size() - 1] += c;
+                        }
+                    }
+                    if (fetchedName == name) {
+                        string genderOptions[3] = { "Male", "Female", "Non-Binary" };
+                        cout << "Stored information for " << name <<
+                            ":\n\tUsername: " << username << 
+                            "\n\tEmail: " << email <<
+                            "\n\tGender: " << genderOptions[std::stoi(gender)] <<
+                            "\n\tD.O.B: " << birthDay << "/" << birthMonth << "/" << birthYear <<
+                            "\n\tPhone Number: " << phoneNumber <<
+                            "\nChildren:";
+                        for (int childIdx = 0; childIdx < childrenInfo.size(); childIdx++) {
+                            cout << "\n\t" << childrenInfo[childIdx][0] <<
+                                " - Classroom No. " << childrenInfo[childIdx][1] <<
+                                "\n\tCaregiver Contact Info" << (childrenInfo[childIdx].size() > 4 ? "s:" : ":");
+                            for (int caregiverIdx = 2; caregiverIdx < childrenInfo[childIdx].size(); caregiverIdx++) {
+                                if (caregiverIdx % 2 == 1) continue;
+                                cout << "\n\t\t" << childrenInfo[childIdx][caregiverIdx] << ": " <<
+                                    childrenInfo[childIdx][caregiverIdx+1] << childrenInfo[childIdx].size();
+                            }
+                        }
+                        break;
+                    }
+                }
+                if (fetchedName != name) cout << "No parent with that name exists!";
+                parentAccounts.close();
+                break;
+            }
         }
     }
 }
@@ -357,11 +528,15 @@ void parentLogin()
     // Account String Declarations
     string username, password, fetchedInfo;
     // Stores all username-password hashes in parentAccount DB
-    vector<string> validAccounts;
-    // Fetches parentAccounts file for populating validAccounts Vector
+    vector<string> accounts;
+    // Fetches parentAccounts file for populating accounts Vector
     ifstream parentAccounts;
     parentAccounts.open("parentAccounts.csv");
-    // Populates validAccounts Vector with all account hashes
+    if (!parentAccounts) {
+        cout << "No parent accounts exist!";
+        return;
+    }
+    // Populates accounts Vector with all account hashes
     while (std::getline(parentAccounts, fetchedInfo)) {
         string fetchedPassword;
         int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
@@ -374,31 +549,33 @@ void parentLogin()
             }
             if (dataPos == 1) fetchedPassword += c;
         }
-        validAccounts.push_back(fetchedPassword);
+        accounts.push_back(fetchedPassword);
     }
     parentAccounts.close();
     // User signin input system
     char attemptingSignin = 'y';
-    while (attemptingSignin != 'n') {
+    for (int attempt = 0; attempt < 3 && attemptingSignin != 'n'; attempt++) {
         cout << "Please enter your username: ";
         cin >> username;
         cout << "Please enter your password: ";
         cin >> password;
         // Forms username-password hash combo
-        string hashedAccount = username + password;
         SHA256 sha;
-        sha.update(hashedAccount);
+        sha.update(username + password);
         uint8_t* digest = sha.digest();
-        hashedAccount = SHA256::toString(digest);
+        string hashedPass = SHA256::toString(digest);
         // Checks if hash combo is a valid account
-        if (std::find(validAccounts.begin(), validAccounts.end(), hashedAccount) != validAccounts.end()) {
+        if (std::find(accounts.begin(), accounts.end(), hashedPass) != accounts.end()) {
             cout << "\nSigned in successfully!\n";
             return;
         }
+        if (attempt == 2) continue;
         cout << "\nUsername or password is incorrect.\nTry again (y/n)? "; // Allows for exit if user can't remember password
         cin >> attemptingSignin;
     }
-    cout << "\nUnsuccessful!";
+    cout << ((attemptingSignin == 'n') ? 
+        "\nUnsuccessful - Login attempt terminated.\n" : 
+        "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
 }
 
 void teacherLogin()
@@ -408,7 +585,30 @@ void teacherLogin()
 
 void adminLogin()
 {
-    cout << "Administrator Login Page\n";
+    string username, password;
+    bool foundMatch = false;
+    // Admin signin input system
+    char attempting = 'y';
+    for (int attempt = 0; attempt < 3 && !foundMatch && attempting != 'n'; attempt++) {
+        cout << "Please enter your username (Case-sensitive): ";
+        cin >> username;
+        cout << "Please enter your password: ";
+        cin >> password;
+        SHA256 sha;
+        sha.update(username + password);
+        uint8_t* digest = sha.digest();
+        string hashedPass = SHA256::toString(digest);
+        if (std::find(admins.begin(), admins.end(), hashedPass) != admins.end()) {
+            adminMenu(username);
+            return;
+        }
+        if (attempt == 2) continue;
+        cout << "\nUsername or password is incorrect.\nTry again (y/n)? "; // Allows for exit if user can't remember password
+        cin >> attempting;
+    }
+    cout << ((attempting == 'n') ?
+        "\nUnsuccessful - Login attempt terminated.\n" : 
+        "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
 }
 
 void contactInfo()
@@ -552,8 +752,8 @@ int main()
             contactInfo();
             break;
         case 7:
-            cout << "You have chosen to Exit the program, goodbye!\n";
-            mainMenuActive == false;
+            cout << "You have chosen to exit the program, goodbye!\n";
+            mainMenuActive = false;
             return 0;
 
         }
