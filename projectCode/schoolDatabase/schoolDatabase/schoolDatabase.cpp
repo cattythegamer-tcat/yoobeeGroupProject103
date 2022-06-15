@@ -60,10 +60,9 @@ struct classroom {
 
 // Caregiver data storage, used when registering a new parent
 struct caregiver {
-    string name;
-    int phoneNum;
+    string name, phoneNum;
     // Caregiver constructor
-    caregiver(string fullName, int number) {
+    caregiver(string fullName, string number) {
         name = fullName;
         phoneNum = number;
     }
@@ -124,6 +123,56 @@ vector<string> subjectOrder = {
     "Social Studies",
     "Music"
 };
+
+// returns a user-inputted int that matches a given range
+int getInt(int lowerLimit = 0, int upperLimit = 100000) {
+    string input;
+    cin >> input;
+    // Checks input is a number
+    for (int inputChar = 0; inputChar < input.size(); inputChar++) {
+        if (input[inputChar] < 47 || input[inputChar] > 57) {
+            cout << "\nError: Input must be a number\nPlease try again: ";
+            return getInt(lowerLimit, upperLimit); // Repeats function
+        }
+    }
+    int inputInt = stoi(input);
+    // Checks number is within range
+    if (inputInt < lowerLimit) { // Lower limit
+        cout << "\nError: Input must be greater or equal to " << lowerLimit << "\nPlease try again: ";
+        return getInt(lowerLimit, upperLimit); // Repeats function
+    }
+    else if (inputInt > upperLimit) { // Upper limit
+        cout << "\nError: Input must be less than or equal to " << upperLimit << "\nPlease try again: ";
+        return getInt(lowerLimit, upperLimit); // Repeats function
+    }
+    // Returns integer
+    return inputInt;
+}
+
+// returns a user-inputted char
+char getChar(string options = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+    string input;
+    cin >> input;
+    if (input.size() > 1) { // Checks only one character has been inputted
+        cout << "\nError: Multiple characters inputted\nPlease try again: ";
+        return getChar(options);
+    }
+    else if (options.find(input) == string::npos) { // Checks character is valid
+        cout << "\nError: Character not recognized\nPlease try again: ";
+        return getChar(options);
+    }
+    // Returns character
+    return input[0];
+}
+
+// returns a string with spaces
+string getSpaced() {
+    string input;
+    if (cin.peek() != '\n') cin.putback('\n'); // Stops first char from being omitted during cin
+    cin.ignore();
+    std::getline(cin, input);
+    return input;
+}
 
 // Saves all classroom data stored in classroomRecords
 void saveClassrooms() {
@@ -231,8 +280,7 @@ void parentRegister() {
 
     // General account info
     cout << "Parent details:\n\nEnter name below:\n";
-    cin.ignore(); // Needed as parent name can have spaces
-    getline(cin, name);
+    name = getSpaced();
     cout << "Enter email: ";
     cin >> email;
     cout << "Enter username: ";
@@ -249,15 +297,15 @@ void parentRegister() {
 
     // Personal details
     cout << "Enter gender (1:Male, 2:Female, 3:Non-Binary): ";
-    cin >> gender;
+    gender = getInt(1, 3);
     cout << "Enter day of birth (1-31): ";
-    cin >> birthDay;
+    birthDay = getInt(1, 31);
     cout << "Enter month of birth (1-12): ";
-    cin >> birthMonth;
+    birthMonth = getInt(1, 12);
     cout << "Enter year of birth (1900-2022): ";
-    cin >> birthYear;
+    birthYear = getInt(1900, 2022);
     cout << "Enter phone number: ";
-    cin >> contactNum;
+    contactNum = getSpaced();
     // Assigns given children to parent
     while (addChild != 'n') {
         // Child variable declarations
@@ -267,33 +315,30 @@ void parentRegister() {
         vector<caregiver> caregivers;
         // General child info
         cout << "Enter name of child below:\n";
-        cin.ignore(); // Needed as child name can have spaces
-        getline(cin, childName);
+        childName = getSpaced();
         cout << "Enter child classroom number: ";
-        cin >> childClass;
+        childClass = getInt();
 
         // Gets all caregivers assoc. with child
         while (addCaregiver != 'n') {
             // Caregiver variable declarations
-            string caregiverName;
-            int phoneNumber;
+            string caregiverName, phoneNumber;
             // General caregiver info
             cout << "Enter caregiver name below:\n";
-            cin.ignore(); // Needed as caregiver name can have spaces
-            getline(cin, caregiverName);
+            caregiverName = getSpaced();
             cout << "Enter caregiver emergency phone number: ";
-            cin >> phoneNumber;
+            phoneNumber = getSpaced();
             // Adds caregiver to child
             caregivers.push_back(caregiver(caregiverName, phoneNumber));
             // Checks if user wants to add another caregiver
             cout << "Add another caregiver (y\\n)? ";
-            cin >> addCaregiver;
+            addCaregiver = getChar("yn");
         }
         // Adds child to parent
         children.push_back(child(childName, childClass, caregivers));
         // Checks if user wants to add another child to parent
         cout << "Add another child (y\\n)? ";
-        cin >> addChild;
+        addChild = getChar("yn");
     }
 
     string hashedPassword = username + password;
@@ -337,8 +382,6 @@ void parentRegister() {
 
 // Adds a new teacher
 void teacherRegister() {
-    system("cls");
-
     cout << "\n\nWhat is your First name: ";
     cin.ignore();
     getline(cin, teachName[teaAcc]);
@@ -406,7 +449,7 @@ void adminMenu(string username) {
             "6. Update student record\n" <<
             "7. Logout\n" <<
             ": ";
-        cin >> adminOption;
+        adminOption = getInt(1, 7);
         // Individual option code
         switch(adminOption) {
         // View classroom records
@@ -417,7 +460,7 @@ void adminMenu(string username) {
             }
             int classOption;
             cout << "Please enter the class number, or type \"0\" for a list of all class numbers: ";
-            cin >> classOption;
+            classOption = getInt();
             // Display all class numbers
             if (classOption == 0) {
                 cout << "Classes: " << classroomRecords[0].classNumber;
@@ -471,10 +514,10 @@ void adminMenu(string username) {
                 "2. Delete class\n" <<
                 "3. Add class\n" <<
                 ": ";
-            cin >> classUpdateOption;
+            classUpdateOption = getInt(1, 3);
             // All cases require a class number
             cout << "Enter class number: ";
-            cin >> classNum;
+            classNum = getInt();
             switch (classUpdateOption) {
             case 1: // Change info in a given class
                 int classUpdateSelector;
@@ -487,12 +530,12 @@ void adminMenu(string username) {
                 cout << "1. Change class number\n" <<
                     "2. Remove all students\n" << // No individual student deletion needed, since admin focuses on large-scale manipulation, not specific
                     ": ";
-                cin >> classUpdateSelector;
+                classUpdateSelector = getInt(1, 2);
                 switch (classUpdateSelector) {
                 case 1: // Change class number
                     int newClassNum;
                     cout << "Enter new class number: ";
-                    cin >> newClassNum;
+                    newClassNum = getInt();
                     // Check number isn't already in use
                     if (std::find(classroomNums.begin(), classroomNums.end(), newClassNum) != classroomNums.end()) {
                         cout << "Number already in use, change denied.";
@@ -508,7 +551,7 @@ void adminMenu(string username) {
                     // Confirmation needed, since this destroys a lot of data
                     char confirmChar;
                     cout << "Confirm wipe of classroom No." << classNum << " (y/n): ";
-                    cin >> confirmChar;
+                    confirmChar = getChar("yn");
                     if (confirmChar == 'y') {
                         // Deletes all students in classroom vector & saves changes
                         classroomRecords[std::find(classroomNums.begin(), classroomNums.end(), classNum) - classroomNums.begin()].students = {};
@@ -529,7 +572,7 @@ void adminMenu(string username) {
                 // Confirmation needed, since this destroys an entire class
                 char deleteConfirmationChar;
                 cout << "Confirm deletion of class No." << classNum << " (y/n): ";
-                cin >> deleteConfirmationChar;
+                deleteConfirmationChar = getChar("yn");
                 if (deleteConfirmationChar == 'y') {
                     // Clears class from memory and files
                     remove(("class" + std::to_string(classNum) + ".csv").c_str());
@@ -556,8 +599,7 @@ void adminMenu(string username) {
             }
             // Gets parent name
             cout << "Please enter parent name, or type \"ALL\" to view all parent names: ";
-            cin.ignore(); // Needed as parent name can have spaces
-            getline(cin, parentName);
+            parentName = getSpaced();
             // ALL option allows admin to view all parents that have accounts
             if (parentName == "ALL") {
                 cout << "Parents:";
@@ -684,11 +726,10 @@ void adminMenu(string username) {
                 "6. Change parent gender\n" <<
                 "7. Re-assign children info\n" <<
                 ": ";
-            cin >> parentUpdateOption;
+            parentUpdateOption = getInt(1, 7);
             // Select parent based off their full name
             cout << "Enter name of parent: ";
-            cin.ignore();
-            std::getline(cin, parentName);
+            parentName = getSpaced();
             // Get account index of parent
             for (int parentMatchIdx = 0; parentMatchIdx < loadedParentAccounts.size(); parentMatchIdx++) {
                 if (loadedParentAccounts[parentMatchIdx][2] == parentName) parentIdx = parentMatchIdx;
@@ -702,7 +743,7 @@ void adminMenu(string username) {
                 // Confirmation needed, since this deletes entire account
                 char parentDeletionConfirmation;
                 cout << "Confirm deletion of " << parentName << " (y/n): ";
-                cin >> parentDeletionConfirmation;
+                parentDeletionConfirmation = getChar("yn");
                 if (parentDeletionConfirmation == 'y') {
                     loadedParentAccounts.erase(loadedParentAccounts.begin() + parentIdx);
                     cout << "Deletion complete.";
@@ -712,7 +753,7 @@ void adminMenu(string username) {
                 break;
             case 2: // Change username & password (Must be changed together, since password is salted with username)
                 cout << "Enter new username: ";
-                cin >> loadedParentAccounts[parentIdx][0];
+                loadedParentAccounts[parentIdx][0] = getSpaced();
                 while (true) {
                     cout << "Enter new password: ";
                     cin >> password;
@@ -730,9 +771,7 @@ void adminMenu(string username) {
                 break;
             case 3: // Change name
                 cout << "Enter new name: ";
-                if (cin.peek() != '\n') cin.putback('\n');
-                cin.ignore();
-                getline(cin, loadedParentAccounts[parentIdx][2]);
+                loadedParentAccounts[parentIdx][2] = getSpaced();
                 cout << "Name change complete.";
                 break;
             case 4: //     email
@@ -742,13 +781,12 @@ void adminMenu(string username) {
                 break;
             case 5: //     number
                 cout << "Enter new number: ";
-                cin >> loadedParentAccounts[parentIdx][8];
+                loadedParentAccounts[parentIdx][8] = getSpaced();
                 cout << "Phone number change complete.";
                 break;
             case 6: //     gender
                 cout << "Enter new gender (1:Male, 2:Female, 3:Non-Binary): ";
-                cin >> loadedParentAccounts[parentIdx][4];
-                loadedParentAccounts[parentIdx][4] = stoi(loadedParentAccounts[parentIdx][4]) - 1;
+                loadedParentAccounts[parentIdx][4] = getInt(1, 3) - 1;
                 cout << "Gender updated.";
                 break;
             case 7: // Re-assign children info
@@ -757,33 +795,25 @@ void adminMenu(string username) {
                 do {
                     // Gets child name
                     cout << "Enter child name: ";
-                    if (cin.peek() != '\n') cin.putback('\n');
-                    cin.ignore();
-                    loadedParentAccounts[parentIdx].push_back("");
-                    getline(cin, loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1]);
-                    loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1] = "[" + loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1];
+                    loadedParentAccounts[parentIdx].push_back("[" + getSpaced());
                     //     classroom
                     cout << "Enter child classroom number: ";
-                    loadedParentAccounts[parentIdx].push_back("");
-                    cin >> loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1];
+                    loadedParentAccounts[parentIdx].push_back(std::to_string(getInt()));
                     // Gets caregiver info for child
                     do {
                         // Name
                         cout << "Enter caregiver name: ";
-                        cin.ignore();
-                        loadedParentAccounts[parentIdx].push_back("");
-                        getline(cin, loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1]);
+                        loadedParentAccounts[parentIdx].push_back(getSpaced());
                         // Number
                         cout << "Enter caregiver emergency contact number: ";
-                        loadedParentAccounts[parentIdx].push_back("");
-                        cin >> loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1];
+                        loadedParentAccounts[parentIdx].push_back(getSpaced());
                         // Repeat confirmation
                         cout << "Add another caregiver (y/n)? ";
-                        cin >> addCaregiverCheck;
+                        addCaregiverCheck = getChar("yn");
                     } while (addCaregiverCheck != 'n');
                     // Repeat confirmation
                     cout << "Add another child (y/n)? ";
-                    cin >> addChildCheck;
+                    addChildCheck = getChar("yn");
                 } while (addChildCheck != 'n');
                 cout << "Children updated.";
                 break;
@@ -808,14 +838,12 @@ void adminMenu(string username) {
             cout << "1. Show individual student\n" <<
                 "2. Show students by grade\n" <<
                 ": ";
-            cin >> studentRecordViewOption;
+            studentRecordViewOption = getInt(1, 2);
 
             switch (studentRecordViewOption) {
             case 1: // Show individual student
                 cout << "Enter student name: ";
-                if (cin.peek() != '\n') cin.putback('\n'); // Stops first char from being omitted during cin
-                cin.ignore();
-                getline(cin, studentName);
+                studentName = getSpaced();
                 // Needs to be seperated to avoid switch bug
                 bool studentFound;
                 studentFound = false;
@@ -886,7 +914,7 @@ void adminMenu(string username) {
                     cout << "\n" << subjectIdx + 1 << ". " << subjectOrder[subjectIdx];
                 }
                 cout << "\n: ";
-                cin >> subject;
+                subject = getInt(1, subjectOrder.size());
                 subject--;
                 // Get target grade
                 cout << "Enter grade:" <<
@@ -895,11 +923,11 @@ void adminMenu(string username) {
                     "\n3. Merit" <<
                     "\n4. Excellence" <<
                     "\n: ";
-                cin >> grade;
+                grade = getInt(1, 4);
                 grade--;
                 // Get target class
                 cout << "Enter class num (Or type \"0\" for all classes): ";
-                cin >> startingClassNum;
+                startingClassNum = getInt();
                 classLoopIdx = 0;
                 // Display all students that meet subject, grade, and class criteria
                 do { // Class loop
@@ -1175,7 +1203,12 @@ int main()
             << "6. Contact Us\n" 
             << "7. Exit\n"
             << ": ";
+        // Old
         cin >> startPageInput;
+        // New-
+        // getInt() - Forces input to be int or getInt(1,7) forces int & match range (Lower, upper)
+        // getChar() or getChar("yn")
+        // getSpaced() accepts all string inputs, even with spaces (Useful for names)
 
         switch (startPageInput)
         {
@@ -1219,9 +1252,7 @@ int main()
             break;
         case 7:
             cout << "You have chosen to exit the program, goodbye!\n";
-            mainMenuActive = false;
             return 0;
-
         }
     }
 }
