@@ -124,6 +124,71 @@ vector<string> subjectOrder = {
     "Music"
 };
 
+// Will be sorted by date
+vector<vector<string>> recentEvents = {
+    // Name (For menu) - Description (For when viewing full article)
+    {"Mebee School Dance", "On the 2nd of May Mebee celebrated its 1500th anniversary with a evening to remember, including a student band performance and a meet-in-greet with local enviromentalist Morgoth Bauglir!"},
+    {"Mebee School Fair", "This year, our school fundraised over $15,520,001 to help support our Leaders in Yachts program. Expect even bigger things next year!"},
+    {"Y3 Hiking Trip", "Congratulations to the resilient class 431 on their recent surprise hiking trip up Mt Cook. Make sure to rest up over the coming holiday break, we've got even more exciting adventures planned next term!"},
+    {"Regional Soccer Winner", "Congrats to our Weka Soccer team, who flew into first place in the Regional Soccer Tournament, narrowly beating the Eagles 7-5!"}
+};
+
+vector<vector<string>> upcomingEvents = {
+    // Name (For menu) - Description (For when viewing full article)
+    {"Parent Teacher Interviews", "Parent teacher interviews are coming up on the 7th of July, so make sure to book yours before it's too late!"},
+    {"Lost and found to be cleared on friday", "To anyone missing their life-sized pink whale plushy, please collect it from the hall by friday, any remaining afterhours will be donated to our local second-hand shop."},
+    {"Annual Waterfight", "Get ready for our annual waterfight on the 2nd of August. IMPORTANT: Autonomous drones are now banned, after the duck tragedy last year."}
+};
+
+vector<string> term1Dates = {
+    "Term 1: 3rd February - 14th April",
+    "Tuesday 1st February       Teacher only day",
+    "Wednesday 2nd February     Teacher only day",
+    "Thursday 3rd February      Learning conferences",
+    "Friday 4th February        Learning conferences",
+    "Monday 7th February        Waitangi Day observed",
+    "Tuesday 8th February       Term 1 classes start",
+    "Friday 15th April  	    Good Friday"
+};
+
+// Populate with correct data
+vector<string> term2Dates = {
+    "Term 1: 3rd February - 14th April",
+    "Tuesday 1st February       Teacher only day",
+    "Wednesday 2nd February     Teacher only day",
+    "Thursday 3rd February      Learning conferences",
+    "Friday 4th February        Learning conferences",
+    "Monday 7th February        Waitangi Day observed",
+    "Tuesday 8th February       Term 1 classes start",
+    "Friday 15th April  	    Good Friday"
+};
+
+vector<string> term3Dates = {
+    "Term 1: 3rd February - 14th April",
+    "Tuesday 1st February       Teacher only day",
+    "Wednesday 2nd February     Teacher only day",
+    "Thursday 3rd February      Learning conferences",
+    "Friday 4th February        Learning conferences",
+    "Monday 7th February        Waitangi Day observed",
+    "Tuesday 8th February       Term 1 classes start",
+    "Friday 15th April  	    Good Friday"
+};
+
+vector<string> term4Dates = {
+    "Term 1: 3rd February - 14th April",
+    "Tuesday 1st February       Teacher only day",
+    "Wednesday 2nd February     Teacher only day",
+    "Thursday 3rd February      Learning conferences",
+    "Friday 4th February        Learning conferences",
+    "Monday 7th February        Waitangi Day observed",
+    "Tuesday 8th February       Term 1 classes start",
+    "Friday 15th April  	    Good Friday"
+};
+
+string schoolName = "Mebee School";
+string schoolPhoneNumber = "013 024 0013";
+string schoolEmailAddress = "helpdesk@mebee.eyes.co.nz";
+
 // returns a user-inputted int that matches a given range
 int getInt(int lowerLimit = 0, int upperLimit = 100000) {
     string input;
@@ -419,6 +484,11 @@ RedoPassword:
         teachPassw[teaAcc] = Passw;
 
     teaAcc++;
+}
+
+// Teacher controls menu
+void teacherMenu(string name) {
+    return;
 }
 
 // Admin controls menu
@@ -1131,6 +1201,17 @@ void functionsEvents()
     }
 }
 
+vector<string> term1 = {
+    "Term 1: 3rd February - 14th April",
+    "Tuesday 1st February       Teacher only day",
+    "Wednesday 2nd February     Teacher only day",
+    "Thursday 3rd February      Learning conferences",
+    "Friday 4th February        Learning conferences",
+    "Monday 7th February        Waitangi Day observed",
+    "Tuesday 8th February       Term 1 classes start",
+    "Friday 15th April  	    Good Friday"
+};
+
 void importantDates()
 {
     int importantDateInput;
@@ -1203,12 +1284,7 @@ int main()
             << "6. Contact Us\n" 
             << "7. Exit\n"
             << ": ";
-        // Old
-        cin >> startPageInput;
-        // New-
-        // getInt() - Forces input to be int or getInt(1,7) forces int & match range (Lower, upper)
-        // getChar() or getChar("yn")
-        // getSpaced() accepts all string inputs, even with spaces (Useful for names)
+        startPageInput = getInt(1, 7);
 
         switch (startPageInput)
         {
