@@ -302,6 +302,382 @@ void adminMenu() {
 
 void parentLogin()
 {
+    int parentUser, parentPass;
+    cout << "Parent Login Page\n";
+    cout << "Please enter your username: ";
+    cin >> parentUser;
+    //if
+    cout << "Please enter your password: ";
+    //if
+}
+
+void teacherLogin()
+{
+    int teacherUser, teacherPass;
+    cout << "Teacher Login Page\n";
+    cout << "Parent Login Page\n";
+    cout << "Please enter your username: ";
+    cin >> teacherUser;
+    //if
+    cout << "Please enter your password: ";
+    cin >> teacherPass;
+    //if
+}
+
+void adminLogin()
+{
+    string adminUser, adminPass;
+
+    cout << "Administrator Login Page\n\n";
+    cout << "Username: ";
+    cin >> adminUser;
+    //if(adminUser == )
+    cout <<"Password: ";
+    cin >> adminPass;
+    //if(adminPass == )
+    //else "incorrect password, please try again"
+    //else
+    //cout << "Incorrect username...
+}
+
+void contactInfo()
+{
+    cout << "Mebee College Contact Information\n";
+}
+
+void functionsEvents()
+{
+    int functionsEventsInput, recentInput, upcomingInput;
+
+    cout << "Mebee College Functions and Events Page\n";
+    cout << " Date : June 29th 2022\n";
+    cout << "Please choose an option below\n";
+    cout << "1. Recent Functions & Events\n2. Upcoming Functions & Events";
+    cin >> functionsEventsInput;
+
+    switch (functionsEventsInput)
+    {
+    case 1:
+        cout << "Recent Functions & Events\n";
+        cout << "1. Matariki\n2. Mebee School Fair\n3. Mebee School Dance\n";
+        cout << "Please choose an option\n";
+        cin >> recentInput;
+        switch (recentInput)
+        {
+        case 1:
+            cout << "Matarki at Mebee College\n\n";
+            cout << "Matariki is a special occasion in the New Zealand calendar which marks the start of the Māori New Year.";
+            cout << "Signified by the Matariki cluster of stars reappearing in our night sky";
+            cout << "this is a time to reflect on the past year, celebrate the present, and plan for the year ahead.\n";
+        }
+        cin >> recentInput;
+        break;
+    case 2:
+        cout << "Upcoming Functions & Events\n";
+        cout << "1. Midterm Assessments\n2.";
+
+        break;
+    }
+}
+
+void importantDates()
+{
+    int importantDateInput;
+    cout << "Choose an option to view\n";
+    cout << "1. Term 1\n2. Term 2\n3. Term 3\n4. Term 4\n";
+    cin >> importantDateInput;
+
+    switch (importantDateInput)
+    {
+    case 1:
+        cout << "Term 1: 3rd February - 14th April 2022\n\n";
+        cout << "Tuesday 1st February       Teacher only day\n";
+        cout << "Thursday 3rd February      Learning conferences\n";
+        cout << "Friday 4th February        Learning conferences\n";
+        cout << "Tuesday 8th February       Term 1 classes start\n";
+        cout << "Thursday 14th April        Term 1 ends\n\n";
+        cout << "Public Holidays\n";
+        cout << "Monday 7th February        Waitangi Day observed\n";
+        cout << "Friday 15th April  	    Good Friday\n";
+        cout << "Term 1 Holidays            Saturday 16th April - Sunday 1st May 2022\n";
+        cout << "School holidays includes Easter Monday, Easter Tuesday and ANZAC day.\n";
+        break;
+    case 2:
+        cout << "Term 2: 2nd May - 8th July 2022\n\n";
+        cout << "Monday 2nd May 	        Term 2 classes start\n";
+        cout << "Friday 3rd June            Teacher only day\n";
+        cout << "Friday 8th July            Teacher only day\n\n";
+        cout << "Public Holidays\n";
+        cout << "Monday 6th June  	        Queens Birthday\n";
+        cout << "Friday 24th  June          Matariki\n";
+        cout << "Term 2 Holidays            Saturday 9th July - Sunday 24th July 2022\n";
+        break;
+    case 3:
+        cout << "Term 3 25th July - 30th September 2022\n\n";
+        cout << "Monday 25th July           Term 3 classes start\n";
+        cout << "Friday 26th August         Teacher only day\n\n";
+        cout << "No Public holidays\n";
+        cout << "Term 3 Holidays            Saturday 1st October - Sunday 16th October 2022\n";
+        break;
+    case 4:
+        cout << "Term 4 17th October - 16th December 2022\n\n";
+        cout << "Monday 17th October        Term 4 classes start\n";
+        cout << "Friday 21st October        Teacher only\n\n";
+        cout << "Public Holidays :\n";
+        cout << "Monday 24th October        Labour Day\n";
+        cout << "Term 4 Christmas school holidays start Saturday 17th December 2022\n";
+        break;
+    }
+}
+
+// Main Function
+int main()
+{
+    loadClassrooms();
+    int startPageInput;
+    int teacherInput;
+    int parentInput;
+    bool mainMenuActive = true;
+
+    while (mainMenuActive == true)
+    {
+        cout << "Welcome to Mebee College\n";
+        cout << "\nPlease choose an option from the menu\n";
+        cout << "1. Latest & Upcoming Events\n2. Term Dates\n";
+        cout << "3. Parent Register & Login\n4. Teacher Register & Login\n";
+        cout << "5. Administrator Login\n6. Contact Us\n7. Exit\n";
+        cin >> startPageInput;
+
+        switch (startPageInput)
+        {
+        case 1:
+            functionsEvents();
+            break;
+        case 2:
+            importantDates();
+            break;
+        case 3:
+            cout << "Would you like to register or login?\n";
+            cout << "1. Register\n2. Login\n";
+            cin >> parentInput;
+            switch (parentInput)
+            {
+            case 1:
+                parentRegister();
+            case 2:
+                parentLogin();
+            }
+            break;
+        case 4:
+            cout << "Would you like to register or login?\n";
+            cout << "1. Register\n2. Login\n";
+            cin >> teacherInput;
+            switch (teacherInput)
+            {
+            case 1:
+                teacherRegister();
+            case 2:
+                teacherLogin();
+            }
+            break;
+        case 5:
+            adminLogin();
+            break;
+        case 6:
+            contactInfo();
+            break;
+        case 7:
+            cout << "You have chosen to Exit the program, goodbye!\n";
+            mainMenuActive == false;
+            return 0;
+
+        }
+    }
+}
+            classManager << endl;
+        }
+        classManager.close();
+        // Saves class file location to masterClassList
+        masterClassList << "class" << classroomRecords[room].classNumber << ".csv" << endl; // NOTE: FileLoc stored instead of classNum for futureproofing, to allow for differing directiories
+    }
+    masterClassList.close();
+}
+
+// Loads all classroom data from filesystem
+void loadClassrooms() {
+    // Open file containing all class file locations
+    ifstream masterClassList;
+    masterClassList.open("masterClassList.csv");
+    // Opener for each class file
+    ifstream classManager;
+    // File line variables
+    string classFile, studentInfo;
+    while (std::getline(masterClassList, classFile)) { // Loops through each class
+        classManager.open(classFile);
+        // Seperates class number from class file
+        std::stringstream numStream; // Stream needed since class number may be > 1 digits
+        std::regex_replace(std::ostream_iterator<char>(numStream), classFile.begin(),
+            classFile.end(), (std::regex)"[^0-9]", "");
+        int classNum = std::stoi(numStream.str()); // Converts stringStream to integer
+        // Seperates each students data
+        vector<student> classStudents;
+        while (std::getline(classManager, studentInfo)) { // Loops through each student in class
+            // Student info variable declarations
+            string studentName;
+            vector<vector<int>> studentGrades;
+            int studentGender = 0, dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
+            for (char& c : studentInfo)
+            {
+                if (c == ',') { // End of csv column
+                    dataPos++;
+                    continue;
+                }
+                switch (dataPos) { // Used for future proofing, since extra student data may be stored in future
+                case 0: // Name
+                    studentName += c;
+                    break;
+                case 1: // Gender
+                    studentGender = c - '0';
+                    break;
+                default: // Grades
+                    if (dataPos % 2 == 0) studentGrades.push_back({ c - '0' });
+                    else studentGrades[studentGrades.size() - 1].push_back(c - '0');
+                    break;
+                }
+            }
+            classStudents.push_back(student(studentName, studentGender, studentGrades));
+        }
+        classroomRecords.push_back(classroom(classNum, classStudents));
+        classManager.close();
+    }
+    masterClassList.close();
+}
+
+// Adds a new parent
+void parentRegister() {
+    classroomRecords[0].students[0].subjectGrades[0][0];
+    // Parent variable declarations
+    string name, email, username, password;
+    char addChild = 'y'; // When this is 'n', stops adding children to children vector
+    int gender, birthDay, birthMonth, birthYear, contactNum;
+    vector<child> children;
+
+    // General parent data assignment
+    cout << "Parent details:\n\nEnter name below:\n";
+    cin.ignore(); // Needed as parent name can have spaces
+    getline(cin, name);
+    cout << "Enter email: ";
+    cin >> email;
+    cout << "Enter gender (1:Male, 2:Female, 3:Other): ";
+    cin >> gender;
+    cout << "Enter day of birth (1-31): ";
+    cin >> birthDay;
+    cout << "Enter month of birth (1-12): ";
+    cin >> birthMonth;
+    cout << "Enter year of birth (1900-2022): ";
+    cin >> birthYear;
+    cout << "Enter phone number: ";
+    cin >> contactNum;
+    // Assigns given children to parent
+    while (addChild != 'n') {
+        // Child variable declarations
+        string childName;
+        char addCaregiver = 'y'; // When addCaregiver is 'n'. stops adding caregivers to caregiver vector
+        int childClass;
+        vector<caregiver> caregivers;
+        // General child info
+        cout << "Enter name of child below:\n";
+        cin.ignore(); // Needed as child name can have spaces
+        getline(cin, childName);
+        cout << "Enter child classroom number: ";
+        cin >> childClass;
+
+        // Gets all caregivers assoc. with child
+        while (addCaregiver != 'n') {
+            // Caregiver variable declarations
+            string caregiverName;
+            int phoneNumber;
+            // General caregiver info
+            cout << "Enter caregiver name below:\n";
+            cin.ignore(); // Needed as caregiver name can have spaces
+            getline(cin, caregiverName);
+            cout << "Enter caregiver emergency phone number: ";
+            cin >> phoneNumber;
+            // Adds caregiver to child
+            caregivers.push_back(caregiver(caregiverName, phoneNumber));
+            // Checks if user wants to add another caregiver
+            cout << "Add another caregiver (y\\n)? ";
+            cin >> addCaregiver;
+        }
+        // Adds child to parent
+        children.push_back(child(childName, childClass, caregivers));
+        // Checks if user wants to add another child to parent
+        cout << "Add another child (y\\n)? ";
+        cin >> addChild;
+    }
+    // Saving parent to hard-drive would be done here
+}
+
+// Adds a new teacher
+void teacherRegister() {
+    system("cls");
+
+    cout << "\n\nWhat is your First name: ";
+    cin.ignore();
+    getline(cin, teachName[teaAcc]);
+
+RedoGender: // goto loops will make us lose points, since they're bad practice to use, using a while loop or try/catch would be better
+    cout << "\n\nWhat is your gender (m = Mr./f = Mrs.): ";
+    cin >> teachGen[teaAcc];
+    if (teachGen[teaAcc] != 'm' || teachGen[teaAcc] != 'f') {
+        goto RedoGender;
+        cout << "That is not a valid option: ";
+    }
+
+    cout << "\n\nWhat is you phone number: ";
+    cin >> teachPho[teaAcc];
+
+    cout << "\n\nWhat is your classroom number: ";
+    cin >> teachClassNum[teaAcc];
+
+    cout << "\n\nWhat year level do you teach: ";
+    cin >> teachYLvl[teaAcc];
+
+    cout << "\n\nWhat will your username be: ";
+    cin >> teachUn[teaAcc];
+
+RedoPassword:
+    cout << "\n\nPlease enter your password: ";
+    cin >> Passw;
+    cout << "\n\nEnter it again: ";
+    cin >> Passw2;
+    if (Passw != Passw2) {
+        cout << "\n\nThe passwords do no match. Try again";
+        goto RedoPassword;
+    }
+    else
+        teachPassw[teaAcc] = Passw;
+
+    teaAcc++;
+}
+
+void adminMenu() {
+
+    int controls = 0;
+    bool looping = true;
+
+    while (looping = true) {
+        switch (controls) {
+        case 1:
+
+        default:
+            break;
+        }
+    }
+}
+
+void parentLogin()
+{
     cout << "Parent Login Page\n";
 }
 
