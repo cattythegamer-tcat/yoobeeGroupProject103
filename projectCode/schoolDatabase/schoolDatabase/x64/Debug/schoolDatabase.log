@@ -1,8 +1,7 @@
 ﻿  schoolDatabase.cpp
   The contents of <filesystem> are available only with C++17 or later.
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(225,55): warning C4834: discarding return value of function with 'nodiscard' attribute
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(430,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(444,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(909,82): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1019,44): warning C4101: 'upcomingInput': unreferenced local variable
-  schoolDatabase.vcxproj -> C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(225,55): warning C4834: discarding return value of function with 'nodiscard' attribute
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(431,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(445,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1030,44): warning C4101: 'upcomingInput': unreferenced local variable
+  schoolDatabase.vcxproj -> C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe

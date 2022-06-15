@@ -384,17 +384,18 @@ void adminMenu(string username) {
     cout << "Welcome " << username << "!\n";
     // Admin menu loop
     while (true) {
-        // All vectors, strings etc needed by switch statements initialized here, since they can't be initialized inside of switch statement
+        // Some vectors, strings etc must be initialized here, since they can't be initialized inside of switch statement
         vector<int> classroomNums = {};
         vector<vector<string>> loadedParentAccounts;
-        string genderOptions[3] = { "Male", "Female", "Non-Binary" };
-        string gradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence" };
         string parentUsername, parentName, fetchedParent, fetchedName, password, rePassword, studentName;
+        // File stream declarations
         ifstream fileIn;
         ofstream fileOut;
         SHA256 sha;
         uint8_t* digest;
-        int parentIdx = -1;
+        // String arrays used to convert integers into their string counterparts
+        string genderOptions[3] = { "Male", "Female", "Non-Binary" };
+        string gradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence" };
         // Control options
         int adminOption;
         cout << "\n1. View class record/s\n" <<
@@ -417,13 +418,14 @@ void adminMenu(string username) {
             int classOption;
             cout << "Please enter the class number, or type \"0\" for a list of all class numbers: ";
             cin >> classOption;
+            // Display all class numbers
             if (classOption == 0) {
                 cout << "Classes: " << classroomRecords[0].classNumber;
                 for (int classroomIdx = 1; classroomIdx < classroomRecords.size(); classroomIdx++) {
                     cout << ", " << classroomRecords[classroomIdx].classNumber;
                 }
                 cout << "\n";
-            }
+            } // Display all students in class
             else {
                 for (int classroomIdx = 0; classroomIdx < classroomRecords.size(); classroomIdx++) {
                     if (classroomRecords[classroomIdx].classNumber == classOption) {
@@ -442,6 +444,7 @@ void adminMenu(string username) {
                                 genderOptions[classroomRecords[classroomIdx].students[studentIdx].gender] <<
                                 "): \n";
                             int subjectGradeCount = classroomRecords[classroomIdx].students[studentIdx].subjectGrades.size();
+                            // Display all subject grades for student
                             for (int subjectIdx = 0; subjectIdx < subjectGradeCount; subjectIdx++) {
                                 vector<int> subjectGrade = classroomRecords[classroomIdx].students[studentIdx].subjectGrades[subjectIdx];
                                 cout << "\t\t" << subjectOrder[subjectGrade[0]] << ": "
@@ -458,10 +461,12 @@ void adminMenu(string username) {
                 cout << "Alert! No classes exist!";
                 continue;
             }
+            // Variable setup
             int classUpdateOption, classNum;
             for (int classroomIdx = 0; classroomIdx < classroomRecords.size(); classroomIdx++) {
                 classroomNums.push_back(classroomRecords[classroomIdx].classNumber);
             }
+            // Class manipulation options
             cout << "1. Update existing class\n" <<
                 "2. Delete class\n" <<
                 "3. Add class\n" <<
@@ -471,35 +476,41 @@ void adminMenu(string username) {
             cout << "Enter class number: ";
             cin >> classNum;
             switch (classUpdateOption) {
-            case 1:
+            case 1: // Change info in a given class
                 int classUpdateSelector;
+                // Check class exists
                 if (std::find(classroomNums.begin(), classroomNums.end(), classNum) == classroomNums.end()) {
                     cout << "Alert, class doesn't exist!";
                     break;
                 }
+                // User selects which bit of information in class they want to change
                 cout << "1. Change class number\n" <<
-                    "2. Remove all students\n" <<
+                    "2. Remove all students\n" << // No individual student deletion needed, since admin focuses on large-scale manipulation, not specific
                     ": ";
                 cin >> classUpdateSelector;
                 switch (classUpdateSelector) {
-                case 1:
+                case 1: // Change class number
                     int newClassNum;
                     cout << "Enter new class number: ";
                     cin >> newClassNum;
+                    // Check number isn't already in use
                     if (std::find(classroomNums.begin(), classroomNums.end(), newClassNum) != classroomNums.end()) {
                         cout << "Number already in use, change denied.";
                         break;
                     }
+                    // Update files with new class number
                     remove(("class" + std::to_string(classNum) + ".csv").c_str());
                     classroomRecords[std::find(classroomNums.begin(), classroomNums.end(), classNum) - classroomNums.begin()].classNumber = newClassNum;
                     saveClassrooms();
                     cout << "Change accepted: " << classNum << " -> " << newClassNum;
                     break;
-                case 2:
+                case 2: // Delete all students
+                    // Confirmation needed, since this destroys a lot of data
                     char confirmChar;
                     cout << "Confirm wipe of classroom No." << classNum << " (y/n): ";
                     cin >> confirmChar;
                     if (confirmChar == 'y') {
+                        // Deletes all students in classroom vector & saves changes
                         classroomRecords[std::find(classroomNums.begin(), classroomNums.end(), classNum) - classroomNums.begin()].students = {};
                         saveClassrooms();
                         cout << "Wipe complete!";
@@ -509,15 +520,18 @@ void adminMenu(string username) {
                     break;
                 }
                 break;
-            case 2:
-                char deleteConfirmationChar;
+            case 2: // Delete a class
+                // Checks class exists
                 if (std::find(classroomNums.begin(), classroomNums.end(), classNum) == classroomNums.end()) {
                     cout << "Alert, class doesn't exist!";
                     break;
                 }
+                // Confirmation needed, since this destroys an entire class
+                char deleteConfirmationChar;
                 cout << "Confirm deletion of class No." << classNum << " (y/n): ";
                 cin >> deleteConfirmationChar;
                 if (deleteConfirmationChar == 'y') {
+                    // Clears class from memory and files
                     remove(("class" + std::to_string(classNum) + ".csv").c_str());
                     classroomRecords.erase(classroomRecords.begin() + (std::find(classroomNums.begin(), classroomNums.end(), classNum) - classroomNums.begin()));
                     saveClassrooms();
@@ -526,27 +540,29 @@ void adminMenu(string username) {
                 }
                 cout << "Deletion terminated.";
                 break;
-            case 3:
+            case 3: // Adds a new class - Populated later by assigned teacher/s
                 classroomRecords.push_back(classroom(classNum, {}));
+                saveClassrooms();
                 cout << "Added empty class No." << classNum;
                 break;
             }
             break;
-            // View parent records
+        // View parent records
         case 3:
             fileIn.open("parentAccounts.csv");
             if (!fileIn.is_open()) {
                 cout << "\nNo parent accounts exist!\n";
                 continue;
             }
-
+            // Gets parent name
             cout << "Please enter parent name, or type \"ALL\" to view all parent names: ";
             cin.ignore(); // Needed as parent name can have spaces
             getline(cin, parentName);
-
+            // ALL option allows admin to view all parents that have accounts
             if (parentName == "ALL") {
                 cout << "Parents:";
                 string fetchedParent;
+                // Gets all parent names in parentAccounts file
                 while (std::getline(fileIn, fetchedParent)) {
                     string fetchedName;
                     int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
@@ -557,9 +573,11 @@ void adminMenu(string username) {
                     cout << "\n\t" << fetchedName;
                 }
                 break;
-            }
+            } // Displays all information assoc. with a given parent
             else {
+                // Finds parent account
                 while (std::getline(fileIn, fetchedParent)) {
+                    // Seperates csv row for parent into seperate values
                     fetchedName = "";
                     string username, email, gender, birthDay, birthMonth, birthYear, phoneNumber;
                     vector<vector<string>> childrenInfo;
@@ -571,34 +589,34 @@ void adminMenu(string username) {
                             continue;
                         }
                         switch (dataPos) {
-                        case 0:
+                        case 0: // Username
                             username += c;
                             break;
-                        case 1:
+                        case 1: // Password (not needed)
                             continue;
-                        case 2:
+                        case 2: // Parent full name
                             fetchedName += c;
                             break;
-                        case 3:
+                        case 3: // Email
                             email += c;
                             break;
-                        case 4:
+                        case 4: // Gender (0:Male, 1:Female, 2:Non-Binary)
                             gender += c;
                             break;
-                        case 5:
+                        case 5: // Day of birth
                             birthDay += c;
                             break;
-                        case 6:
+                        case 6: //     Month
                             birthMonth += c;
                             break;
-                        case 7:
+                        case 7: //     Year
                             birthYear += c;
                             break;
-                        case 8:
+                        case 8: // Phone number
                             phoneNumber += c;
                             break;
-                        default:
-                            if (c == '[') {
+                        default: // Children info
+                            if (c == '[') { // Start of new child info group
                                 if (childrenInfo.size() > 0) {
                                     childrenInfo[childrenInfo.size() - 1].pop_back();
                                 }
@@ -607,8 +625,9 @@ void adminMenu(string username) {
                             else childrenInfo[childrenInfo.size() - 1][childrenInfo[childrenInfo.size() - 1].size() - 1] += c;
                         }
                     }
+                    // If parent matches input, displays all found info on parent 
                     if (fetchedName == parentName) {
-                        string genderOptions[3] = { "Male", "Female", "Non-Binary" };
+                        // General
                         cout << "Stored information for " << parentName <<
                             ":\n\tUsername: " << username <<
                             "\n\tEmail: " << email <<
@@ -616,10 +635,12 @@ void adminMenu(string username) {
                             "\n\tD.O.B: " << birthDay << "/" << birthMonth << "/" << birthYear <<
                             "\n\tPhone Number: " << phoneNumber <<
                             "\nChildren:";
+                        // Children
                         for (int childIdx = 0; childIdx < childrenInfo.size(); childIdx++) {
                             cout << "\n\t" << childrenInfo[childIdx][0] <<
                                 " - Classroom No. " << childrenInfo[childIdx][1] <<
                                 "\n\tCaregiver Contact Info" << (childrenInfo[childIdx].size() > 4 ? "s:" : ":");
+                            // Caregivers assigned to child
                             for (int caregiverIdx = 2; caregiverIdx < childrenInfo[childIdx].size(); caregiverIdx++) {
                                 if (caregiverIdx % 2 == 1) continue;
                                 cout << "\n\t\t" << childrenInfo[childIdx][caregiverIdx] << ": " <<
@@ -640,6 +661,7 @@ void adminMenu(string username) {
                 cout << "\nNo parent accounts exist!\n";
                 continue;
             }
+            // Gets all parent accounts
             while (std::getline(fileIn, fetchedParent)) {
                 loadedParentAccounts.push_back({});
                 loadedParentAccounts[loadedParentAccounts.size() - 1].push_back("");
@@ -651,7 +673,9 @@ void adminMenu(string username) {
                     loadedParentAccounts[loadedParentAccounts.size() - 1][loadedParentAccounts[loadedParentAccounts.size() - 1].size() - 1] += c;
                 }
             }
-            int parentUpdateOption;
+            // Parent manipulation options
+            int parentUpdateOption, parentIdx;
+            parentIdx = -1;
             cout << "1. Delete parent record\n" <<
                 "2. Change parent username & password\n" <<
                 "3. Change parent name\n" <<
@@ -661,9 +685,11 @@ void adminMenu(string username) {
                 "7. Re-assign children info\n" <<
                 ": ";
             cin >> parentUpdateOption;
+            // Select parent based off their full name
             cout << "Enter name of parent: ";
             cin.ignore();
             std::getline(cin, parentName);
+            // Get account index of parent
             for (int parentMatchIdx = 0; parentMatchIdx < loadedParentAccounts.size(); parentMatchIdx++) {
                 if (loadedParentAccounts[parentMatchIdx][2] == parentName) parentIdx = parentMatchIdx;
             }
@@ -672,7 +698,8 @@ void adminMenu(string username) {
                 break;
             }
             switch (parentUpdateOption) {
-            case 1: // Delete parent
+            case 1: // Delete parent account
+                // Confirmation needed, since this deletes entire account
                 char parentDeletionConfirmation;
                 cout << "Confirm deletion of " << parentName << " (y/n): ";
                 cin >> parentDeletionConfirmation;
@@ -694,7 +721,7 @@ void adminMenu(string username) {
                     if (password == rePassword) break;
                     else cout << "Error! Passwords don't match.\n";
                 }
-
+                // Creates hashed password
                 sha.update(loadedParentAccounts[parentIdx][0] + password);
                 digest = sha.digest();
                 loadedParentAccounts[parentIdx][1] = SHA256::toString(digest);
@@ -708,17 +735,17 @@ void adminMenu(string username) {
                 getline(cin, loadedParentAccounts[parentIdx][2]);
                 cout << "Name change complete.";
                 break;
-            case 4: // Change email
+            case 4: //     email
                 cout << "Enter new email: ";
                 cin >> loadedParentAccounts[parentIdx][3];
                 cout << "Email change complete.";
                 break;
-            case 5: // Change number
+            case 5: //     number
                 cout << "Enter new number: ";
                 cin >> loadedParentAccounts[parentIdx][8];
                 cout << "Phone number change complete.";
                 break;
-            case 6: // Change gender
+            case 6: //     gender
                 cout << "Enter new gender (1:Male, 2:Female, 3:Non-Binary): ";
                 cin >> loadedParentAccounts[parentIdx][4];
                 loadedParentAccounts[parentIdx][4] = stoi(loadedParentAccounts[parentIdx][4]) - 1;
@@ -728,26 +755,33 @@ void adminMenu(string username) {
                 while (loadedParentAccounts[parentIdx].size() > 9) loadedParentAccounts[parentIdx].pop_back();
                 char addChildCheck, addCaregiverCheck;
                 do {
+                    // Gets child name
                     cout << "Enter child name: ";
                     if (cin.peek() != '\n') cin.putback('\n');
                     cin.ignore();
                     loadedParentAccounts[parentIdx].push_back("");
                     getline(cin, loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1]);
                     loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1] = "[" + loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1];
+                    //     classroom
                     cout << "Enter child classroom number: ";
                     loadedParentAccounts[parentIdx].push_back("");
                     cin >> loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1];
+                    // Gets caregiver info for child
                     do {
+                        // Name
                         cout << "Enter caregiver name: ";
                         cin.ignore();
                         loadedParentAccounts[parentIdx].push_back("");
                         getline(cin, loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1]);
+                        // Number
                         cout << "Enter caregiver emergency contact number: ";
                         loadedParentAccounts[parentIdx].push_back("");
                         cin >> loadedParentAccounts[parentIdx][loadedParentAccounts[parentIdx].size() - 1];
+                        // Repeat confirmation
                         cout << "Add another caregiver (y/n)? ";
                         cin >> addCaregiverCheck;
                     } while (addCaregiverCheck != 'n');
+                    // Repeat confirmation
                     cout << "Add another child (y/n)? ";
                     cin >> addChildCheck;
                 } while (addChildCheck != 'n');
@@ -755,7 +789,9 @@ void adminMenu(string username) {
                 break;
             }
             fileIn.close();
+            // Saves account changes
             fileOut.open("parentAccounts.csv");
+            // Re-write parentAccount file
             for (int parentAccIdx = 0; parentAccIdx < loadedParentAccounts.size(); parentAccIdx++) {
                 fileOut << loadedParentAccounts[parentAccIdx][0];
                 for (int parentItemIdx = 1; parentItemIdx < loadedParentAccounts[parentAccIdx].size(); parentItemIdx++) {
@@ -767,33 +803,40 @@ void adminMenu(string username) {
             break;
         // View student records
         case 5:
+            // View options
             int studentRecordViewOption;
             cout << "1. Show individual student\n" <<
                 "2. Show students by grade\n" <<
                 ": ";
             cin >> studentRecordViewOption;
+
             switch (studentRecordViewOption) {
             case 1: // Show individual student
                 cout << "Enter student name: ";
-                if (cin.peek() != '\n') cin.putback('\n');
+                if (cin.peek() != '\n') cin.putback('\n'); // Stops first char from being omitted during cin
                 cin.ignore();
                 getline(cin, studentName);
                 // Needs to be seperated to avoid switch bug
                 bool studentFound;
                 studentFound = false;
+                // Finds student index
                 for (int classIdx = 0; classIdx < classroomRecords.size() && !studentFound; classIdx++) {
                     for (int studentIdx = 0; studentIdx < classroomRecords[classIdx].students.size() && !studentFound; studentIdx++) {
                         if (classroomRecords[classIdx].students[studentIdx].name == studentName) {
+                            // Displays found student info
                             vector<string> caregiverInfosDups; // Initial version, which may contain repeated parent infos
                             vector<string> caregiverInfos; // Cleaned version, with only one instance of each parent
+                            // General info
                             cout << genderOptions[classroomRecords[classIdx].students[studentIdx].gender] <<
                                 " - Classroom No." << classroomRecords[classIdx].classNumber <<
                                 "\nCurrent Term Grades:";
+                            // Subject grades
                             for (int subjectIdx = 0; subjectIdx < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); subjectIdx++) {
                                 cout << "\n\t" <<
                                     subjectOrder[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][0]] <<
                                     ": " << gradeOptions[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][1]];
                             }
+                            // Fetches caregiver info from file
                             fileIn.open("parentAccounts.csv");
                             if (!fileIn.is_open()) {
                                 cout << "\nNo parent account collections found!\n";
@@ -811,7 +854,7 @@ void adminMenu(string username) {
                                         }
                                         currentInfoChunk = "";
                                     }
-                                    else if (studentRelated && c == '[') break;
+                                    else if (studentRelated && c == '[') break; // Gets student info group
                                     else currentInfoChunk += c;
                                 }
                                 if (studentRelated && currentInfoChunk != "") {
@@ -819,7 +862,7 @@ void adminMenu(string username) {
                                 }
                             }
                             fileIn.close();
-
+                            // Displays found caregiver info
                             if (caregiverInfosDups.size() > 0) cout << "\nParent/Guardian details: ";
                             for (int caregiverIdx = 0; caregiverIdx < caregiverInfosDups.size() / 2; caregiverIdx++) {
                                 if (find(caregiverInfos.begin(), caregiverInfos.end(), caregiverInfosDups[caregiverIdx * 2]) == caregiverInfos.end()) {
@@ -834,9 +877,10 @@ void adminMenu(string username) {
                 }
                 if (!studentFound) cout << "No such student exists!";
                 break;
-            case 2:
-                int subject, grade, startingClassNum, rollCounter;
+            case 2: // Shows all students that meet a given criteria
+                int subject, grade, startingClassNum, rollCounter, classLoopIdx, classIdx;
                 rollCounter = 0;
+                // Get target subject
                 cout << "Enter subject:";
                 for (int subjectIdx = 0; subjectIdx < subjectOrder.size(); subjectIdx++) {
                     cout << "\n" << subjectIdx + 1 << ". " << subjectOrder[subjectIdx];
@@ -844,6 +888,7 @@ void adminMenu(string username) {
                 cout << "\n: ";
                 cin >> subject;
                 subject--;
+                // Get target grade
                 cout << "Enter grade:" <<
                     "\n1. Not Achieved" <<
                     "\n2. Achieved" <<
@@ -852,22 +897,36 @@ void adminMenu(string username) {
                     "\n: ";
                 cin >> grade;
                 grade--;
+                // Get target class
                 cout << "Enter class num (Or type \"0\" for all classes): ";
                 cin >> startingClassNum;
-                for (int classIdx = startingClassNum; classIdx < classroomRecords.size(); classIdx++) {
-                    for (int studentIdx = 0; studentIdx < classroomRecords[classIdx].students.size(); studentIdx++) {
-                        for (int subjectIdx = 0; subjectIdx < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); subjectIdx++) {
-                            vector<int> subjectGrade = classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx];
-                            if (subjectGrade[0] == subject && subjectGrade[1] == grade) {
+                classLoopIdx = 0;
+                // Display all students that meet subject, grade, and class criteria
+                do { // Class loop
+                    classIdx = classroomRecords[classLoopIdx].classNumber;
+                    // Specific class filter
+                    if (classIdx != startingClassNum && startingClassNum > 0) {
+                        classLoopIdx++;
+                        continue;
+                    }
+                    // Displays all matching students in class
+                    for (int studentIdx = 0; studentIdx < classroomRecords[classLoopIdx].students.size(); studentIdx++) {
+                        // Subject loop checks that student subject grades match criteria
+                        for (int subjectIdx = 0; subjectIdx < classroomRecords[classLoopIdx].students[studentIdx].subjectGrades.size(); subjectIdx++) {
+                            // Shortens grade reference
+                            vector<int> subjectGrade = classroomRecords[classLoopIdx].students[studentIdx].subjectGrades[subjectIdx];
+                            if (subjectGrade[0] == subject && subjectGrade[1] == grade) { // Subject-Grade criteria checker
                                 rollCounter++;
-                                studentName = classroomRecords[classIdx].students[studentIdx].name;
-                                cout << classroomRecords[classIdx].students[studentIdx].name << " (" <<
-                                    genderOptions[classroomRecords[classIdx].students[studentIdx].gender] <<
-                                    ") - Class No." << classIdx + 1;
+                                studentName = classroomRecords[classLoopIdx].students[studentIdx].name;
+                                // Display general student info
+                                cout << classroomRecords[classLoopIdx].students[studentIdx].name << " (" <<
+                                    genderOptions[classroomRecords[classLoopIdx].students[studentIdx].gender] <<
+                                    ") - Class No." << classIdx;
 
                                 vector<string> caregiverInfosDups; // Initial version, which may contain repeated parent infos
                                 vector<string> caregiverInfos; // Cleaned version, with only one instance of each parent
 
+                                // Fetches student caregiver info
                                 fileIn.open("parentAccounts.csv");
                                 if (!fileIn.is_open()) {
                                     cout << "\nNo parent account collections found!\n";
@@ -893,7 +952,7 @@ void adminMenu(string username) {
                                     }
                                 }
                                 fileIn.close();
-
+                                // Display student caregivers
                                 for (int caregiverIdx = 0; caregiverIdx < caregiverInfosDups.size() / 2; caregiverIdx++) {
                                     if (find(caregiverInfos.begin(), caregiverInfos.end(), caregiverInfosDups[caregiverIdx * 2]) == caregiverInfos.end()) {
                                         caregiverInfos.push_back(caregiverInfosDups[caregiverIdx * 2]);
@@ -906,8 +965,12 @@ void adminMenu(string username) {
                             }
                         }
                     }
-                    if (startingClassNum != 0) classIdx = classroomRecords.size();
-                }
+                    classLoopIdx++;
+                } while (classLoopIdx < classroomRecords.size());
+                // Search ending message
+                if (rollCounter > 0) cout << "\nTotal students found: " << rollCounter << endl;
+                else cout << "\nNo students found under criteria!" << endl;
+                break;
             }
         // Update student records
         case 6:

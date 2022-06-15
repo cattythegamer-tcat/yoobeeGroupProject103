@@ -1,0 +1,1 @@
+After looking more closely at it, there isn't actually any bugs here. I was mis-reading the subjects as seperate columns (So 1 column per student), but they were actually row seperated. Looking at it this way, there is no issue with the code currently, though an explanatory comment in the code should be added to explain this better.
