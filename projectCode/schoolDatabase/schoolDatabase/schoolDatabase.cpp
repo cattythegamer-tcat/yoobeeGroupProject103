@@ -174,7 +174,7 @@ string schoolName = "Mebee School";
 string schoolPhoneNumber = "013 024 0013";
 string schoolEmailAddress = "helpdesk@mebee.eyes.co.nz";
 
-// returns a user-inputted int that matches a given range
+// Returns a user-inputted int that matches a given range
 int getInt(int lowerLimit = 0, int upperLimit = 100000) {
     string input;
     cin >> input;
@@ -199,7 +199,7 @@ int getInt(int lowerLimit = 0, int upperLimit = 100000) {
     return inputInt;
 }
 
-// returns a user-inputted char
+// Returns a user-inputted char
 char getChar(string options = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ") {
     string input;
     cin >> input;
@@ -215,7 +215,7 @@ char getChar(string options = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW
     return input[0];
 }
 
-// returns a string with spaces
+// Returns a string with spaces
 string getSpaced() {
     string input;
     if (cin.peek() != '\n') cin.putback('\n'); // Stops first char from being omitted during cin
@@ -432,58 +432,80 @@ void parentRegister() {
 
 // Adds a new teacher
 void teacherRegister() {
-    string teachName;
-    char teachGen;
-    int teachDoB;
-    string teachEmail;
-    int teachPho;
-    int teachClassNum;
-    int teachYLvl;
-    string teachUn;
-    string Passw;
-    string Passw2;
-    string teachPassw;
-    bool looping = true;
+    string name, email, phoneNumber, username, password, rePassword;
+    int gender, birthDay, birthMonth, birthYear, teachClassNum, teachYLvl;
 
-    system("cls");
-    cout << "\n\nWhat is your First name: ";
-    cin.ignore();
-    getline(cin, teachName);
+    cout << "What is your full name: ";
+    name = getSpaced();
 
-    while (looping == true) {
-        cout << "\n\nWhat is your gender (m = Mr./f = Mrs.): ";
-        cin >> teachGen;
-        if (teachGen != 'm' || teachGen != 'f')
-            cout << "That is not a valid option: \n\n";
-        else
-            looping = false;
+    cout << "What is your gender (1:Male, 2:Female, 3:Non-Binary): ";
+    gender = getInt(1, 3);
+
+    cout << "What is your email address: ";
+    cin >> email;
+
+    cout << "What is your phone number: ";
+    phoneNumber = getSpaced();
+
+    cout << "What is your classroom number: ";
+    teachClassNum = getInt();
+
+    cout << "What year level do you teach: ";
+    teachYLvl = getInt();
+
+    cout << "Enter day of birth (1-31): ";
+    birthDay = getInt(1, 31);
+    cout << "Enter month of birth (1-12): ";
+    birthMonth = getInt(1, 12);
+    cout << "Enter year of birth (1900-2022): ";
+    birthYear = getInt(1900, 2022);
+
+    cout << "What will your username be: ";
+    cin >> username;
+
+    while (true) {
+        cout << "Please enter your password: ";
+        cin >> password;
+        cout << "Enter it again: ";
+        cin >> rePassword;
+        if (password != rePassword) cout << "The passwords do no match. Try again\n";
+        else break;
     }
 
-    cout << "\n\nWhat is you phone number: ";
-    cin >> teachPho;
+    string hashedPassword = username + password;
+    SHA256 sha;
+    sha.update(hashedPassword);
+    uint8_t* digest = sha.digest();
+    password = SHA256::toString(digest);
 
-    cout << "\n\nWhat is your classroom number: ";
-    cin >> teachClassNum;
-
-    cout << "\n\nWhat year level do you teach: ";
-    cin >> teachYLvl;
-
-    cout << "\n\nWhat will your username be: ";
-    cin >> teachUn;
-
-    looping = true;
-    while (looping == true) {
-        cout << "\n\nPlease enter your password: ";
-        cin >> Passw;
-        cout << "\n\nEnter it again: ";
-        cin >> Passw2;
-        if (Passw != Passw2)
-            cout << "\n\nThe passwords do no match. Try again";
-        else {
-            teachPassw = Passw;
-            looping = false;
-        }
+    // Load parent account file
+    ofstream teacherAccounts;
+    teacherAccounts.open("teacherAccounts.csv", std::ios::app); // Appends new parent to end of file
+    if (!teacherAccounts.is_open()) {
+        cout << "\nNo teacher account file found, ending registration attempt!\n";
+        return;
     }
+    // Write new parent info to file
+    teacherAccounts << username << ","
+        << password << ","
+        << name << ","
+        << email << ","
+        << gender - 1 << ","
+        << birthDay << ","
+        << birthMonth << ","
+        << birthYear << ","
+        << phoneNumber << ","
+        << teachClassNum << ","
+        << teachYLvl;
+    // Close parent file
+    teacherAccounts << endl;
+    teacherAccounts.close();
+    return;
+}
+
+// Parent controls menu
+void parentMenu(string name) {
+    return;
 }
 
 // Teacher controls menu
@@ -1184,121 +1206,75 @@ void parentLogin()
         string hashedPass = SHA256::toString(digest);
         // Checks if hash combo is a valid account
         if (std::find(accounts.begin(), accounts.end(), hashedPass) != accounts.end()) {
-            cout << "\nSigned in successfully!\n";
+            parentMenu(username);
             return;
         }
         if (attempt == 2) continue;
         cout << "\nUsername or password is incorrect.\nTry again (y/n)? "; // Allows for exit if user can't remember password
-        cin >> attemptingSignin;
+        attemptingSignin = getChar("yn");
     }
     cout << ((attemptingSignin == 'n') ?
         "\nUnsuccessful - Login attempt terminated.\n" :
         "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
 }
 
+// Teacher signin
 void teacherLogin()
 {
-    int teacherUser, teacherPass;
-    cout << "Teacher Login Page\n";
-    cout << "Parent Login Page\n";
-    cout << "Please enter your username: ";
-    cin >> teacherUser;
-    //if
-    cout << "Please enter your password: ";
-    cin >> teacherPass;
-    //if
-}
-
-void contactInfo()
-{
-    cout << "Mebee College Contact Information\n";
-}
-
-void functionsEvents()
-{
-    int functionsEventsInput, recentInput, upcomingInput;
-
-    cout << "Mebee College Functions and Events Page\n";
-    cout << " Date : June 29th 2022\n";
-    cout << "Please choose an option below\n";
-    cout << "1. Recent Functions & Events\n2. Upcoming Functions & Events";
-    cin >> functionsEventsInput;
-
-    switch (functionsEventsInput)
-    {
-    case 1:
-        cout << "Recent Functions & Events\n";
-        cout << "1. Matariki\n2. Mebee School Fair\n3. Mebee School Dance\n";
-        cout << "Please choose an option\n";
-        cin >> recentInput;
-        switch (recentInput)
+    // Account String Declarations
+    string username, password, fetchedInfo;
+    // Stores all username-password hashes in parentAccount DB
+    vector<string> accounts;
+    // Fetches parentAccounts file for populating accounts Vector
+    ifstream teacherAccounts;
+    teacherAccounts.open("teacherAccounts.csv");
+    if (!teacherAccounts.is_open()) {
+        cout << "No teacher accounts exist!";
+        return;
+    }
+    // Populates accounts Vector with all account hashes
+    while (std::getline(teacherAccounts, fetchedInfo)) {
+        string fetchedPassword;
+        int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
+        for (char& c : fetchedInfo)
         {
-        case 1:
-            cout << "Matarki at Mebee College\n\n";
-            cout << "Matariki is a special occasion in the New Zealand calendar which marks the start of the Māori New Year.";
-            cout << "Signified by the Matariki cluster of stars reappearing in our night sky";
-            cout << "this is a time to reflect on the past year, celebrate the present, and plan for the year ahead.\n";
+            if (c == ',') { // End of csv column
+                dataPos++;
+                if (dataPos == 2) break;
+                continue;
+            }
+            if (dataPos == 1) fetchedPassword += c;
         }
-        cin >> recentInput;
-        break;
-    case 2:
-        cout << "Upcoming Functions & Events\n";
-        cout << "1. Midterm Assessments\n2.";
-
-        break;
+        accounts.push_back(fetchedPassword);
     }
+    teacherAccounts.close();
+    // User signin input system
+    char attemptingSignin = 'y';
+    for (int attempt = 0; attempt < 3 && attemptingSignin != 'n'; attempt++) {
+        cout << "Please enter your username: ";
+        cin >> username;
+        cout << "Please enter your password: ";
+        cin >> password;
+        // Forms username-password hash combo
+        SHA256 sha;
+        sha.update(username + password);
+        uint8_t* digest = sha.digest();
+        string hashedPass = SHA256::toString(digest);
+        // Checks if hash combo is a valid account
+        if (std::find(accounts.begin(), accounts.end(), hashedPass) != accounts.end()) {
+            teacherMenu(username);
+            return;
+        }
+        if (attempt == 2) continue;
+        cout << "\nUsername or password is incorrect.\nTry again (y/n)? "; // Allows for exit if user can't remember password
+        attemptingSignin = getChar("yn");
+    }
+    cout << ((attemptingSignin == 'n') ?
+        "\nUnsuccessful - Login attempt terminated.\n" :
+        "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
 }
 
-void importantDates()
-{
-    int importantDateInput;
-    cout << "Choose an option to view\n";
-    cout << "1. Term 1\n2. Term 2\n3. Term 3\n4. Term 4\n";
-    cin >> importantDateInput;
-
-    switch (importantDateInput)
-    {
-    case 1:
-        cout << "Term 1: 3rd February - 14th April 2022\n\n";
-        cout << "Tuesday 1st February       Teacher only day\n";
-        cout << "Thursday 3rd February      Learning conferences\n";
-        cout << "Friday 4th February        Learning conferences\n";
-        cout << "Tuesday 8th February       Term 1 classes start\n";
-        cout << "Thursday 14th April        Term 1 ends\n\n";
-        cout << "Public Holidays\n";
-        cout << "Monday 7th February        Waitangi Day observed\n";
-        cout << "Friday 15th April  	    Good Friday\n";
-        cout << "Term 1 Holidays            Saturday 16th April - Sunday 1st May 2022\n";
-        cout << "School holidays includes Easter Monday, Easter Tuesday and ANZAC day.\n";
-        break;
-    case 2:
-        cout << "Term 2: 2nd May - 8th July 2022\n\n";
-        cout << "Monday 2nd May 	        Term 2 classes start\n";
-        cout << "Friday 3rd June            Teacher only day\n";
-        cout << "Friday 8th July            Teacher only day\n\n";
-        cout << "Public Holidays\n";
-        cout << "Monday 6th June  	        Queens Birthday\n";
-        cout << "Friday 24th  June          Matariki\n";
-        cout << "Term 2 Holidays            Saturday 9th July - Sunday 24th July 2022\n";
-        break;
-    case 3:
-        cout << "Term 3 25th July - 30th September 2022\n\n";
-        cout << "Monday 25th July           Term 3 classes start\n";
-        cout << "Friday 26th August         Teacher only day\n\n";
-        cout << "No Public holidays\n";
-        cout << "Term 3 Holidays            Saturday 1st October - Sunday 16th October 2022\n";
-        break;
-    case 4:
-        cout << "Term 4 17th October - 16th December 2022\n\n";
-        cout << "Monday 17th October        Term 4 classes start\n";
-        cout << "Friday 21st October        Teacher only\n\n";
-        cout << "Public Holidays :\n";
-        cout << "Monday 24th October        Labour Day\n";
-        cout << "Term 4 Christmas school holidays start Saturday 17th December 2022\n";
-        break;
-    }
-}
-
+// Admin signin
 void adminLogin()
 {
     string username, password;
@@ -1320,18 +1296,20 @@ void adminLogin()
         }
         if (attempt == 2) continue;
         cout << "\nUsername or password is incorrect.\nTry again (y/n)? "; // Allows for exit if user can't remember password
-        cin >> attempting;
+        attempting = getChar("yn");
     }
     cout << ((attempting == 'n') ?
         "\nUnsuccessful - Login attempt terminated.\n" :
         "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
 }
 
+// School contact info viewing
 void contactInfo()
 {
     cout << "Mebee College Contact Information\n";
 }
 
+// Event info viewing
 void functionsEvents()
 {
     int functionsEventsInput, recentInput, upcomingInput;
@@ -1358,6 +1336,7 @@ void functionsEvents()
     }
 }
 
+// Date info viewing
 void importantDates()
 {
     int importantDateInput;
@@ -1443,7 +1422,7 @@ int main()
         case 3:
             cout << "Would you like to register or login?\n";
             cout << "1. Register\n2. Login\n";
-            cin >> parentInput;
+            parentInput = getInt(1, 2);
             switch (parentInput)
             {
             case 1:
@@ -1457,13 +1436,15 @@ int main()
         case 4:
             cout << "Would you like to register or login?\n";
             cout << "1. Register\n2. Login\n";
-            cin >> teacherInput;
+            teacherInput = getInt(1, 2);
             switch (teacherInput)
             {
             case 1:
                 teacherRegister();
+                break;
             case 2:
                 teacherLogin();
+                break;
             }
             break;
         case 5:

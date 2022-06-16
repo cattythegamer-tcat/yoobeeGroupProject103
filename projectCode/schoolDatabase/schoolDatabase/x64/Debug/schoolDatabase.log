@@ -1,8 +1,8 @@
 ﻿  schoolDatabase.cpp
   The contents of <filesystem> are available only with C++17 or later.
-C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(274,55): warning C4834: discarding return value of function with 'nodiscard' attribute
-C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(475,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(489,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(917,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1110,44): warning C4101: 'upcomingInput': unreferenced local variable
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(324,55): warning C4834: discarding return value of function with 'nodiscard' attribute
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(562,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(576,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1004,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1306,44): warning C4101: 'upcomingInput': unreferenced local variable
   schoolDatabase.vcxproj -> C:\Users\270168415\OneDrive - UP Education\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe
