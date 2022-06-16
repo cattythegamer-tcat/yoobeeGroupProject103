@@ -90,6 +90,9 @@ vector<classroom> classroomRecords = {
     )*/
 };
 
+// Teachers
+vector<string> teachers = {}; // name, classroom number
+
 // Convert these vectors to files if time allows
 vector<string> admins = {
     "Jayden", "e5c45796ab12b638d3ed06c71747625f018a74c3c83b32ef4429a9c0b5da5a95", // letmein123
@@ -224,8 +227,21 @@ string getSpaced() {
     return input;
 }
 
+// Get teacher name
+string getTeacher(int classNumber) {
+    if (std::find(teachers.begin(), teachers.end(), std::to_string(classNumber)) != teachers.end())
+        return teachers[std::find(teachers.begin(), teachers.end(), std::to_string(classNumber)) - teachers.begin() - 1];
+    else return "Unknown";
+}
+// Get teacher name overload where classNum is string
+string getTeacher(string classNumber) {
+    if (std::find(teachers.begin(), teachers.end(), classNumber) != teachers.end())
+        return teachers[std::find(teachers.begin(), teachers.end(), classNumber) - teachers.begin() - 1];
+    else return "Unknown";
+}
+
 // Saves all classroom data stored in classroomRecords
-void saveClassrooms() {
+void saveSchool() {
     // Opens masterClassList file, containing data of all class file locations
     ofstream masterClassList;
     masterClassList.open("masterClassList.csv", ofstream::out | ofstream::trunc); // Clears current masterFile
@@ -260,7 +276,7 @@ void saveClassrooms() {
 }
 
 // Loads all classroom data from filesystem
-void loadClassrooms() {
+void loadSchool() {
     // Open file containing all class file locations
     ifstream masterClassList;
     masterClassList.open("masterClassList.csv");
@@ -317,6 +333,22 @@ void loadClassrooms() {
         classManager.close();
     }
     masterClassList.close();
+    teachers = {""};
+    ifstream teacherAccounts;
+    teacherAccounts.open("teacherAccounts.csv");
+    string teacherInfo;
+    while (std::getline(teacherAccounts, teacherInfo)) {
+        int dataPos = 0;
+        for (char& c : teacherInfo) {
+            if (c == ',') {
+                dataPos++;
+                if (dataPos == 2 || dataPos == 9) teachers.push_back("");
+                continue;
+            }
+            else if (dataPos == 2 || dataPos == 9) teachers[teachers.size() - 1] += c;
+        }
+    }
+    teacherAccounts.close();
 }
 
 // Adds a new parent
@@ -448,7 +480,14 @@ void teacherRegister() {
     phoneNumber = getSpaced();
 
     cout << "What is your classroom number: ";
-    teachClassNum = getInt();
+    while (true) {
+        teachClassNum = getInt();
+        if (std::find(teachers.begin(), teachers.end(), std::to_string(teachClassNum)) != teachers.end()) {
+            cout << "Teacher already assigned to class, please enter a different class number or contact the office.\nClass number: ";
+            continue;
+        }
+        break;
+    }
 
     cout << "What year level do you teach: ";
     teachYLvl = getInt();
@@ -500,6 +539,7 @@ void teacherRegister() {
     // Close parent file
     teacherAccounts << endl;
     teacherAccounts.close();
+    loadSchool();
     return;
 }
 
@@ -565,9 +605,7 @@ void adminMenu(string username) {
                 for (int classroomIdx = 0; classroomIdx < classroomRecords.size(); classroomIdx++) {
                     if (classroomRecords[classroomIdx].classNumber == classOption) {
                         int rollCount = classroomRecords[classroomIdx].students.size();
-                        string teacherName = "Unknown";
-                        // Need to find actual teacher name here
-
+                        string teacherName = getTeacher(classroomRecords[classroomIdx].classNumber);
                         // Display general class info
                         cout << "Classroom " << classOption << " records:\n" <<
                             "Teacher: " << teacherName <<
@@ -636,7 +674,7 @@ void adminMenu(string username) {
                     // Update files with new class number
                     remove(("class" + std::to_string(classNum) + ".csv").c_str());
                     classroomRecords[std::find(classroomNums.begin(), classroomNums.end(), classNum) - classroomNums.begin()].classNumber = newClassNum;
-                    saveClassrooms();
+                    saveSchool();
                     cout << "Change accepted: " << classNum << " -> " << newClassNum;
                     break;
                 case 2: // Delete all students
@@ -647,7 +685,7 @@ void adminMenu(string username) {
                     if (confirmChar == 'y') {
                         // Deletes all students in classroom vector & saves changes
                         classroomRecords[std::find(classroomNums.begin(), classroomNums.end(), classNum) - classroomNums.begin()].students = {};
-                        saveClassrooms();
+                        saveSchool();
                         cout << "Wipe complete!";
                         break;
                     }
@@ -669,7 +707,7 @@ void adminMenu(string username) {
                     // Clears class from memory and files
                     remove(("class" + std::to_string(classNum) + ".csv").c_str());
                     classroomRecords.erase(classroomRecords.begin() + (std::find(classroomNums.begin(), classroomNums.end(), classNum) - classroomNums.begin()));
-                    saveClassrooms();
+                    saveSchool();
                     cout << "Deletion of class No." << classNum << " complete.";
                     break;
                 }
@@ -677,7 +715,7 @@ void adminMenu(string username) {
                 break;
             case 3: // Adds a new class - Populated later by assigned teacher/s
                 classroomRecords.push_back(classroom(classNum, {}));
-                saveClassrooms();
+                saveSchool();
                 cout << "Added empty class No." << classNum;
                 break;
             }
@@ -772,7 +810,8 @@ void adminMenu(string username) {
                         // Children
                         for (int childIdx = 0; childIdx < childrenInfo.size(); childIdx++) {
                             cout << "\n\t" << childrenInfo[childIdx][0] <<
-                                " - Classroom No. " << childrenInfo[childIdx][1] <<
+                                " - Classroom No. " << childrenInfo[childIdx][1] << " Teacher: " << 
+                                getTeacher(childrenInfo[childIdx][1]) <<
                                 "\n\tCaregiver Contact Info" << (childrenInfo[childIdx].size() > 4 ? "s:" : ":");
                             // Caregivers assigned to child
                             for (int caregiverIdx = 2; caregiverIdx < childrenInfo[childIdx].size(); caregiverIdx++) {
@@ -948,7 +987,8 @@ void adminMenu(string username) {
                             vector<string> caregiverInfos; // Cleaned version, with only one instance of each parent
                             // General info
                             cout << genderOptions[classroomRecords[classIdx].students[studentIdx].gender] <<
-                                " - Classroom No." << classroomRecords[classIdx].classNumber <<
+                                " - Classroom No." << classroomRecords[classIdx].classNumber << " Teacher: " <<
+                                getTeacher(classroomRecords[classIdx].classNumber) <<
                                 "\nCurrent Term Grades:";
                             // Subject grades
                             for (int subjectIdx = 0; subjectIdx < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); subjectIdx++) {
@@ -1041,7 +1081,7 @@ void adminMenu(string username) {
                                 // Display general student info
                                 cout << classroomRecords[classLoopIdx].students[studentIdx].name << " (" <<
                                     genderOptions[classroomRecords[classLoopIdx].students[studentIdx].gender] <<
-                                    ") - Class No." << classIdx;
+                                    ") - Class No." << classIdx << " Teacher: " << getTeacher(classroomRecords[classLoopIdx].classNumber);
 
                                 vector<string> caregiverInfosDups; // Initial version, which may contain repeated parent infos
                                 vector<string> caregiverInfos; // Cleaned version, with only one instance of each parent
@@ -1223,9 +1263,9 @@ void teacherLogin()
 {
     // Account String Declarations
     string username, password, fetchedInfo;
-    // Stores all username-password hashes in parentAccount DB
+    // Stores all username-password hashes in teacherAccount DB
     vector<string> accounts;
-    // Fetches parentAccounts file for populating accounts Vector
+    // Fetches teacherAccounts file for populating accounts Vector
     ifstream teacherAccounts;
     teacherAccounts.open("teacherAccounts.csv");
     if (!teacherAccounts.is_open()) {
@@ -1391,7 +1431,7 @@ void importantDates()
 // Main Function
 int main()
 {
-    loadClassrooms();
+    loadSchool();
     int startPageInput;
     int teacherInput;
     int parentInput;
@@ -1421,7 +1461,7 @@ int main()
             break;
         case 3:
             cout << "Would you like to register or login?\n";
-            cout << "1. Register\n2. Login\n";
+            cout << "1. Register\n2. Login\n: ";
             parentInput = getInt(1, 2);
             switch (parentInput)
             {
@@ -1435,7 +1475,7 @@ int main()
             break;
         case 4:
             cout << "Would you like to register or login?\n";
-            cout << "1. Register\n2. Login\n";
+            cout << "1. Register\n2. Login\n: ";
             teacherInput = getInt(1, 2);
             switch (teacherInput)
             {
