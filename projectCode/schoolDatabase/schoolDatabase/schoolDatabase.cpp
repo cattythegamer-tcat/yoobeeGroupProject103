@@ -544,8 +544,240 @@ void teacherRegister() {
 }
 
 // Parent controls menu
-void parentMenu(string name) {
-    return;
+void parentMenu(string name, string hashedPass) {
+    system("cls");
+    // String arrays used to convert integers into their string counterparts
+    string genderOptions[3] = { "Male", "Female", "Non-Binary" };
+    string gradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence" };
+
+    cout << "Welcome back " << name << "!";
+    // Load all parent account information from file
+    while (true) {
+        vector<vector<string>> loadedParentAccounts;
+        string parentUsername, parentName, fetchedParent, fetchedHash, password, rePassword;
+        string username, email, gender, birthDay, birthMonth, birthYear, phoneNumber;
+        vector<vector<string>> childrenInfo;
+        // File stream declarations
+        ifstream fileIn;
+        fileIn.open("parentAccounts.csv");
+        if (!fileIn.is_open()) {
+            cout << "\nNo parent accounts exist!\n";
+            return;
+        }
+        // Finds parent account
+        while (std::getline(fileIn, fetchedParent)) {
+            // Seperates csv row for parent into seperate values
+            fetchedHash = "", username = "", email = "", gender = "", birthDay = "";
+            birthMonth = "", birthYear = "", phoneNumber = "";
+            childrenInfo = {};
+            int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
+            for (char& c : fetchedParent) {
+                if (c == ',') {
+                    dataPos++;
+                    if (dataPos >= 10) childrenInfo[childrenInfo.size() - 1].push_back("");
+                    continue;
+                }
+                switch (dataPos) {
+                case 0: // Username
+                    username += c;
+                    break;
+                case 1: // Password (not needed)
+                    continue;
+                case 2: // Parent full name
+                    fetchedHash += c;
+                    break;
+                case 3: // Email
+                    email += c;
+                    break;
+                case 4: // Gender (0:Male, 1:Female, 2:Non-Binary)
+                    gender += c;
+                    break;
+                case 5: // Day of birth
+                    birthDay += c;
+                    break;
+                case 6: //     Month
+                    birthMonth += c;
+                    break;
+                case 7: //     Year
+                    birthYear += c;
+                    break;
+                case 8: // Phone number
+                    phoneNumber += c;
+                    break;
+                default: // Children info
+                    if (c == '[') { // Start of new child info group
+                        if (childrenInfo.size() > 0) {
+                            childrenInfo[childrenInfo.size() - 1].pop_back();
+                        }
+                        childrenInfo.push_back({ "" });
+                    }
+                    else childrenInfo[childrenInfo.size() - 1][childrenInfo[childrenInfo.size() - 1].size() - 1] += c;
+                }
+            }
+            // If parent matches input, displays all found info on parent 
+            if (fetchedHash == parentName) break;
+        }
+        fileIn.close();
+        ofstream fileOut;
+        SHA256 sha;
+        uint8_t* digest;
+        // Parent option selection
+        int parentOption;
+        cout << "\n1. View children information\n" <<
+            "2. Edit account\n" <<
+            "3. View account information\n" <<
+            "4. Logout\n: ";
+        parentOption = getInt(1, 4);
+        switch (parentOption) {
+        // View child info
+        case 1:
+            // Fetch all children related to parent
+            for (int classIdx = 0; classIdx < classroomRecords.size(); classIdx++) {
+                for (int studentIdx = 0; studentIdx < classroomRecords[classIdx].students.size(); studentIdx++) {
+                    for (int childIdx = 0; childIdx < childrenInfo.size(); childIdx++) {
+                        if (std::find(childrenInfo[childIdx].begin(), childrenInfo[childIdx].end(), classroomRecords[classIdx].students[studentIdx].name) != childrenInfo[childIdx].end()) {
+                            // Displays found student info
+                            vector<string> caregiverInfosDups; // Initial version, which may contain repeated parent infos
+                            vector<string> caregiverInfos; // Cleaned version, with only one instance of each parent
+                            // General info
+                            cout << "\n" << classroomRecords[classIdx].students[studentIdx].name << " " <<
+                                genderOptions[classroomRecords[classIdx].students[studentIdx].gender] <<
+                                " - Classroom No." << classroomRecords[classIdx].classNumber << " Teacher: " <<
+                                getTeacher(classroomRecords[classIdx].classNumber) <<
+                                "\nCurrent Term Grades:";
+                            // Subject grades
+                            for (int subjectIdx = 0; subjectIdx < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); subjectIdx++) {
+                                cout << "\n\t" <<
+                                    subjectOrder[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][0]] <<
+                                    ": " << gradeOptions[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][1]];
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+        // Edit account
+        case 2:
+            fileIn.open("parentAccounts.csv");
+            if (!fileIn.is_open()) {
+                cout << "\nNo parent accounts exist!\n";
+                continue;
+            }
+            // Gets all parent accounts
+            while (std::getline(fileIn, fetchedParent)) {
+                loadedParentAccounts.push_back({});
+                loadedParentAccounts[loadedParentAccounts.size() - 1].push_back("");
+                for (char& c : fetchedParent) {
+                    if (c == ',') {
+                        loadedParentAccounts[loadedParentAccounts.size() - 1].push_back("");
+                        continue;
+                    }
+                    loadedParentAccounts[loadedParentAccounts.size() - 1][loadedParentAccounts[loadedParentAccounts.size() - 1].size() - 1] += c;
+                }
+            }
+            // Parent manipulation options
+            int parentUpdateOption, parentIdx;
+            parentIdx = -1;
+            cout << "1. Change username & password\n" <<
+                "2. Change name\n" <<
+                "3. Update email\n" <<
+                "4. Update number\n" <<
+                "5. Change gender\n" <<
+                "6. Cancel\n" <<
+                ": ";
+            parentUpdateOption = getInt(1, 6);
+            // Get account index of parent
+            for (int parentMatchIdx = 0; parentMatchIdx < loadedParentAccounts.size(); parentMatchIdx++) {
+                if (loadedParentAccounts[parentMatchIdx][1] == hashedPass) parentIdx = parentMatchIdx;
+            }
+            if (parentIdx == -1) {
+                cout << "Alert! Parent not found.";
+                break;
+            }
+            switch (parentUpdateOption) {
+            case 1: // Change username & password (Must be changed together, since password is salted with username)
+                cout << "Enter new username: ";
+                loadedParentAccounts[parentIdx][0] = getSpaced();
+                while (true) {
+                    cout << "Enter new password: ";
+                    cin >> password;
+                    cout << "Repeat password: ";
+                    cin >> rePassword;
+                    if (password == rePassword) break;
+                    else cout << "Error! Passwords don't match.\n";
+                }
+                // Creates hashed password
+                sha.update(loadedParentAccounts[parentIdx][0] + password);
+                digest = sha.digest();
+                loadedParentAccounts[parentIdx][1] = SHA256::toString(digest);
+
+                cout << "Username and password have been updated successfully.";
+                break;
+            case 2: // Change name
+                cout << "Enter new name: ";
+                loadedParentAccounts[parentIdx][2] = getSpaced();
+                cout << "Name change complete.";
+                break;
+            case 3: //     email
+                cout << "Enter new email: ";
+                cin >> loadedParentAccounts[parentIdx][3];
+                cout << "Email change complete.";
+                break;
+            case 4: //     number
+                cout << "Enter new number: ";
+                loadedParentAccounts[parentIdx][8] = getSpaced();
+                cout << "Phone number change complete.";
+                break;
+            case 5: //     gender
+                cout << "Enter new gender (1:Male, 2:Female, 3:Non-Binary): ";
+                loadedParentAccounts[parentIdx][4] = std::to_string(getInt(1, 3) - 1);
+                cout << "Gender updated.";
+                break;
+            case 6:
+                continue;
+            }
+            fileIn.close();
+            // Saves account changes
+            fileOut.open("parentAccounts.csv");
+            // Re-write parentAccount file
+            for (int parentAccIdx = 0; parentAccIdx < loadedParentAccounts.size(); parentAccIdx++) {
+                fileOut << loadedParentAccounts[parentAccIdx][0];
+                for (int parentItemIdx = 1; parentItemIdx < loadedParentAccounts[parentAccIdx].size(); parentItemIdx++) {
+                    fileOut << "," << loadedParentAccounts[parentAccIdx][parentItemIdx];
+                }
+                fileOut << endl;
+            }
+            fileOut.close();
+            break;
+        // View account information
+        case 3:
+            // General
+            cout << "Stored information for " << name <<
+                ":\n\tUsername: " << username <<
+                "\n\tEmail: " << email <<
+                "\n\tGender: " << genderOptions[std::stoi(gender)] <<
+                "\n\tD.O.B: " << birthDay << "/" << birthMonth << "/" << birthYear <<
+                "\n\tPhone Number: " << phoneNumber <<
+                "\nChildren:";
+            // Children
+            for (int childIdx = 0; childIdx < childrenInfo.size(); childIdx++) {
+                cout << "\n\t" << childrenInfo[childIdx][0] <<
+                    " - Classroom No. " << childrenInfo[childIdx][1] << " Teacher: " <<
+                    getTeacher(childrenInfo[childIdx][1]) <<
+                    "\n\tCaregiver Contact Info" << (childrenInfo[childIdx].size() > 4 ? "s:" : ":");
+                // Caregivers assigned to child
+                for (int caregiverIdx = 2; caregiverIdx < childrenInfo[childIdx].size(); caregiverIdx++) {
+                    if (caregiverIdx % 2 == 1) continue;
+                    cout << "\n\t\t" << childrenInfo[childIdx][caregiverIdx] << ": " <<
+                        childrenInfo[childIdx][caregiverIdx + 1] << childrenInfo[childIdx].size();
+                }
+            }
+            break;
+        // Logout
+        case 4:
+            return;
+        }
+    }
 }
 
 // Teacher controls menu
@@ -1246,7 +1478,7 @@ void parentLogin()
         string hashedPass = SHA256::toString(digest);
         // Checks if hash combo is a valid account
         if (std::find(accounts.begin(), accounts.end(), hashedPass) != accounts.end()) {
-            parentMenu(username);
+            parentMenu(username, hashedPass);
             return;
         }
         if (attempt == 2) continue;
@@ -1439,6 +1671,7 @@ int main()
 
     while (mainMenuActive == true)
     {
+        system("cls");
         cout << "Welcome to Mebee College\n\n"
             << "Please choose an option from the menu\n"
             << "1. School Functions & Events\n"
