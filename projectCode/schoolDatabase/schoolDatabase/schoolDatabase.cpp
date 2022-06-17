@@ -112,21 +112,21 @@ vector<string> subjectOrder = {
 // Will be sorted by date
 vector<vector<string>> recentEvents = {
     // Name (For menu) - Description (For when viewing full article)
-    {"Mebee School Dance", "On the 2nd of May Mebee celebrated its 1500th anniversary with a evening to remember, including a student band performance and a meet-in-greet with local enviromentalist Morgoth Bauglir!"},
-    {"Mebee School Fair", "This year, our school fundraised over $15,520,001 to help support our Leaders in Yachts program. Expect even bigger things next year!"},
-    {"Y3 Hiking Trip", "Congratulations to the resilient class 431 on their recent surprise hiking trip up Mt Cook. Make sure to rest up over the coming holiday break, we've got even more exciting adventures planned next term!"},
-    {"Regional Soccer Winner", "Congrats to our Weka Soccer team, who flew into first place in the Regional Soccer Tournament, narrowly beating the Eagles 7-5!"}
+    {"Mebee School Dance\nMonday May 2nd\n" "On the 2nd of May Mebee celebrated its 1500th anniversary with a evening to remember, including a student band performance and a meet-in-greet with local enviromentalist Morgoth Bauglir!\n"},
+    {"Mebee School Fair\nSaturday May 14th\n" "This year, our school fundraised over $15,520,001 to help support our Leaders in Yachts program. Expect even bigger things next year!\n"},
+    {"Y3 Hiking Trip\nFriday May 26th\n" "Congratulations to the resilient class 431 on their recent surprise hiking trip up Mt Cook. Make sure to rest up over the coming holiday break, we've got even more exciting adventures planned next term!\n"},
+    {"Regional Soccer Winner\nSaturday June 12th\n" "Congrats to our Weka Soccer team, who flew into first place in the Regional Soccer Tournament, narrowly beating the Eagles 7-5!\n"}
 };
 
 vector<vector<string>> upcomingEvents = {
     // Name (For menu) - Description (For when viewing full article)
-    {"Parent Teacher Interviews", "Parent teacher interviews are coming up on the 7th of July, so make sure to book yours before it's too late!"},
-    {"Lost and found to be cleared on friday", "To anyone missing their life-sized pink whale plushy, please collect it from the hall by friday, any remaining afterhours will be donated to our local second-hand shop."},
-    {"Annual Waterfight", "Get ready for our annual waterfight on the 2nd of August. IMPORTANT: Autonomous drones are now banned, after the duck tragedy last year."}
+    {"Parent Teacher Interviews\nFriday July 1st\n" "Parent teacher interviews are coming up on the 7th of July, so make sure to book yours before it's too late!\n"},
+    {"Lost and found to be cleared on\nFriday July 1st\n" "To anyone missing their life-sized pink whale plushy, please collect it from the hall by friday, any remaining afterhours will be donated to our local second-hand shop.\n"},
+    {"Annual Mebee Waterfight\nThursday July 8th\n" "Get ready for our annual waterfight on the 2nd of August. IMPORTANT: Autonomous drones are now banned, after the duck tragedy last year.\n"}
 };
 
 vector<string> term1Dates = {
-    "Term 1: 3rd February - 14th April",
+    "Term 1: 3rd February - 14th April\n",
     "Tuesday 1st February       Teacher only day",
     "Wednesday 2nd February     Teacher only day",
     "Thursday 3rd February      Learning conferences",
@@ -136,41 +136,37 @@ vector<string> term1Dates = {
     "Friday 15th April  	    Good Friday"
 };
 
-// Populate with correct data
+
 vector<string> term2Dates = {
-    "Term 1: 3rd February - 14th April",
-    "Tuesday 1st February       Teacher only day",
-    "Wednesday 2nd February     Teacher only day",
-    "Thursday 3rd February      Learning conferences",
-    "Friday 4th February        Learning conferences",
-    "Monday 7th February        Waitangi Day observed",
-    "Tuesday 8th February       Term 1 classes start",
-    "Friday 15th April  	    Good Friday"
+    "Term 2: 2nd May - 8th July 2022\n",
+    "Monday 2nd May 	           Term 2 classes start",
+    "Friday 3rd June            Teacher only day",
+    "Friday 8th July            Teacher only day",
+    "Public Holidays",
+    "Monday 6th June  	   Queens Birthday",
+    "Friday 24th  June          Matariki",
+    "Term 2 Holidays            Saturday 9th July - Sunday 24th July 2022\n"
 };
 
 vector<string> term3Dates = {
-    "Term 1: 3rd February - 14th April",
-    "Tuesday 1st February       Teacher only day",
-    "Wednesday 2nd February     Teacher only day",
-    "Thursday 3rd February      Learning conferences",
-    "Friday 4th February        Learning conferences",
-    "Monday 7th February        Waitangi Day observed",
-    "Tuesday 8th February       Term 1 classes start",
-    "Friday 15th April  	    Good Friday"
+  "Term 3 25th July - 30th September 2022",
+  "Monday 25th July           Term 3 classes start",
+  "Friday 26th August         Teacher only day",
+  "No Public holidays",
+  "Term 3 Holidays            Saturday 1st October - Sunday 16th October 2022\n",
 };
 
 vector<string> term4Dates = {
-    "Term 1: 3rd February - 14th April",
-    "Tuesday 1st February       Teacher only day",
-    "Wednesday 2nd February     Teacher only day",
-    "Thursday 3rd February      Learning conferences",
-    "Friday 4th February        Learning conferences",
-    "Monday 7th February        Waitangi Day observed",
-    "Tuesday 8th February       Term 1 classes start",
-    "Friday 15th April  	    Good Friday"
+  "Term 4 17th October - 16th December 2022\n",
+  "Monday 17th October        Term 4 classes start",
+  "Friday 21st October        Teacher only",
+  "Public Holidays :\n",
+  "Monday 24th October        Labour Day",
+  "Term 4 Christmas school holidays start Saturday 17th December 2022\n",
 };
 
 string schoolName = "Mebee School";
+string schoolAddress = "Level 6, Wellington Railway Station\nWellington\nNew Zealand";
 string schoolPhoneNumber = "013 024 0013";
 string schoolEmailAddress = "helpdesk@mebee.eyes.co.nz";
 
@@ -1200,7 +1196,6 @@ void teacherLogin()
 {
     int teacherUser, teacherPass;
     cout << "Teacher Login Page\n";
-    cout << "Parent Login Page\n";
     cout << "Please enter your username: ";
     cin >> teacherUser;
     //if
@@ -1239,31 +1234,45 @@ void adminLogin()
 
 void contactInfo()
 {
-    cout << "Mebee College Contact Information\n";
+    cout << "Mebee School Contact Information\n";
+    cout << schoolName << endl;
+    cout << schoolAddress << endl;
+    cout << schoolPhoneNumber << endl;
+    cout << schoolEmailAddress << endl;
 }
 
 void functionsEvents()
 {
-    int functionsEventsInput, recentInput, upcomingInput;
+    int functionsEventsInput;
 
-    cout << "Mebee College Functions and Events Page\n";
-    cout << " Date : June 29th 2022\n";
-    cout << "Please choose an option below\n";
-    cout << "1. Recent Functions & Events\n2. Upcoming Functions & Events";
+    cout << "\nMebee School Recent and Upcoming Events\n\n";
+    cout << "Please choose one of the options below:\n";
+    cout << "1. Recent Functions & Events\n2. Upcoming Functions & Events\n";
     cin >> functionsEventsInput;
+    cout << endl;
 
     switch (functionsEventsInput)
     {
     case 1:
-        cout << "Recent Functions & Events\n";
-        cout << "1. Matariki\n2. Mebee School Fair\n3. Mebee School Dance\n";
-        cout << "Please choose an option\n";
-        cin >> recentInput;
+        cout << "+-------------------------+\n";
+        cout << "Recent Mebee School Events\n";
+        cout << "+-------------------------+\n";
+
+        for (int i = 0; i < recentEvents.size(); i++) {
+            for (int j = 0; j < recentEvents[i].size(); j++)
+                cout << recentEvents[i][j] << " ";
+            cout << endl;
+        }
         break;
     case 2:
-        cout << "Upcoming Functions & Events\n";
-        cout << "1. Midterm Assessments\n2.";
-
+        cout << "+---------------------------+\n";
+        cout << "Upcoming Mebee School Events\n";
+        cout << "+---------------------------+\n";
+        for (int i = 0; i < upcomingEvents.size(); i++) {
+            for (int j = 0; j < upcomingEvents[i].size(); j++)
+                cout << upcomingEvents[i][j] << " ";
+            cout << endl;
+        }
         break;
     }
 }
@@ -1278,43 +1287,44 @@ void importantDates()
     switch (importantDateInput)
     {
     case 1:
-        cout << "Term 1: 3rd February - 14th April 2022\n\n";
-        cout << "Tuesday 1st February       Teacher only day\n";
-        cout << "Wednesday 2nd February     Teacher only day\n";
-        cout << "Thursday 3rd February      Learning conferences\n";
-        cout << "Friday 4th February        Learning conferences\n";
-        cout << "Tuesday 8th February       Term 1 classes start\n";
-        cout << "Thursday 14th April        Term 1 ends\n\n";
-        cout << "Public Holidays\n";
-        cout << "Monday 7th February        Waitangi Day observed\n";
-        cout << "Friday 15th April  	    Good Friday\n";
-        cout << "Term 1 Holidays            Saturday 16th April - Sunday 1st May 2022\n";
-        cout << "School holidays includes Easter Monday, Easter Tuesday and ANZAC day.\n";
+        cout << "+---------------------------+\n";
+        cout << "           Term One          \n";
+        cout << "+---------------------------+\n";
+        for (int i = 0; i < term1Dates.size(); i++) {
+            for (int j = 0; j < term1Dates[i].size(); j++)
+                cout <<term1Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     case 2:
-        cout << "Term 2: 2nd May - 8th July 2022\n\n";
-        cout << "Monday 2nd May 	        Term 2 classes start\n";
-        cout << "Friday 3rd June            Teacher only day\n";
-        cout << "Friday 8th July            Teacher only day\n\n";
-        cout << "Public Holidays\n";
-        cout << "Monday 6th June  	        Queens Birthday\n";
-        cout << "Friday 24th  June          Matariki\n";
-        cout << "Term 2 Holidays            Saturday 9th July - Sunday 24th July 2022\n";
+        cout << "+---------------------------+\n";
+        cout << "           Term Two          \n";
+        cout << "+---------------------------+\n";
+        for (int i = 0; i < term2Dates.size(); i++) {
+            for (int j = 0; j < term2Dates[i].size(); j++)
+                cout << term2Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     case 3:
-        cout << "Term 3 25th July - 30th September 2022\n\n";
-        cout << "Monday 25th July           Term 3 classes start\n";
-        cout << "Friday 26th August         Teacher only day\n\n";
-        cout << "No Public holidays\n";
-        cout << "Term 3 Holidays            Saturday 1st October - Sunday 16th October 2022\n";
+        cout << "+---------------------------+\n";
+        cout << "          Term Three         \n";
+        cout << "+---------------------------+\n";
+        for (int i = 0; i < term3Dates.size(); i++) {
+            for (int j = 0; j < term3Dates[i].size(); j++)
+                cout << term3Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     case 4:
-        cout << "Term 4 17th October - 16th December 2022\n\n";
-        cout << "Monday 17th October        Term 4 classes start\n";
-        cout << "Friday 21st October        Teacher only\n\n";
-        cout << "Public Holidays :\n";
-        cout << "Monday 24th October        Labour Day\n";
-        cout << "Term 4 Christmas school holidays start Saturday 17th December 2022\n";
+        cout << "+---------------------------+\n";
+        cout << "           Term Four         \n";
+        cout << "+---------------------------+\n";
+        for (int i = 0; i < term4Dates.size(); i++) {
+            for (int j = 0; j < term4Dates[i].size(); j++)
+                cout << term4Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     }
 }
@@ -1330,7 +1340,7 @@ int main()
 
     while (mainMenuActive == true)
     {
-        cout << "Welcome to Mebee College\n\n"
+        cout << "\nWelcome to Mebee School\n\n"
             << "Please choose an option from the menu\n"
             << "1. School Functions & Events\n"
             << "2. Term Dates\n"
