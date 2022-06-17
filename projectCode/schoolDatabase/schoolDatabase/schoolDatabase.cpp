@@ -509,7 +509,7 @@ void teacherMenu(string name) {
 }
 
 // Creates a student record (Admin)
-void adminRecordStudent() {
+void recordStudent() {
     bool makingRecords = true;
 
     while (makingRecords = true) {
@@ -568,47 +568,147 @@ void adminRecordStudent() {
 }
 
 // Edit a student record (Admin)
-void adminEditStudentRecord() {
+void editStudentRecord() {
 
-    bool editRecords = true;
+    bool recordsLoop = true;
 
-    while (editRecords = true) {
+    while (recordsLoop = true) {
         int input;
-        int displayNum;
-        int recordClass;
-        int recordStudent;
-        bool looping = true;
+        int maxI;
+        int recordClass, recordStudent;
+        bool validLooping = true, editRecordLoop = true;
 
         system("cls");
 
-        cout << "\nWhat classroom is the student who's record you want to change in?";
-        for (int i = 0; i < classroomRecords.size(); i++)
-            cout << "\n" << i + 1 << ". " << classroomRecords[i]; //Will print the classrooms in a list for user to select
-
-        while (looping = true) {
-            cout << "\nSelect the classroom (numeric): ";
-            cin >> input;
-            if ((input - 1) > classroomRecords.size()) //
-                cout << "\nThat is not a valid option.\nPlease input a vaild number: ";
-            else
-                looping = false;
+        cout << "\nWho is the teacher of the student who's record you want to edit?";
+        for (int i = 0; i < classroomRecords.size(); i++) {
+            cout << "\n" << i + 1 << ". " << getTeacher(classroomRecords[i].classNumber); //Will print the classrooms in a list for user to select
+            maxI = i;
         }
-        looping = true;
+        input = getInt(1, maxI);
+        
         recordClass = input--;
 
         cout << "\nSelect out of the following students who's record you'd like to edit";
         for (int i = 0; i < classroomRecords[input].students.size(); i++)
             cout << "\n" << i + 1 << ". " << classroomRecords[recordClass].students[i].name;
 
-        while (looping = true) {
+        while (validLooping = true) {
             cout << "\nSelect the student (numeric): ";
             cin >> input;
             if ((input - 1) > classroomRecords[recordClass].students.size())
                 cout << "\nThat is not a valid option.\nPlease input a vaild number: ";
             else
-                looping = false;
+                validLooping = false;
         }
         recordStudent = input--;
+
+        while (editRecordLoop = true) {
+
+            string recordPrintName = classroomRecords[recordClass].students[recordStudent].name;
+            string newRecordName;
+
+            cout << "What would you like to edit about " << recordPrintName << "'s record?\n";
+            cout << "1. Name\n2. Gender\n3. Grades\n4. Exit\n\nSelect your option: ";
+            input = getInt(1, 4);
+
+            switch (input) {
+            case 1:
+                cout << "\n\nWhat is the first and last name?\n";
+                newRecordName = getSpaced();
+                classroomRecords[recordClass].students[recordStudent].name = newRecordName;
+                break;
+            case 2:
+                cout << "\n\nWhat is " << recordPrintName << "'s gender?";
+                cout << "\n1. Male\n2. Female\n3. Non-Binary\n\nSelect your option: ";
+                input = getInt(1, 3) - 1;
+                classroomRecords[recordClass].students[recordStudent].gender = input;
+            case 3:
+                bool gradesLoop = true;
+                while (gradesLoop = true) {
+                    int subjectInput;
+                    int gradesInput;
+
+                    cout << "\n\nWhat subject's grade do you want to edit?";
+                    cout << "\n1. Maths\n2. Science\n3. English\n4. Health\n5. P.E.";
+                    cout << "\n6.Digital Technologies\n7.Art\n8.Social Studies\n9.Music";
+                    cout << "\n\nSelect your option: ";
+                    subjectInput = getInt(1, 9) - 1;
+
+                    cout << "\n\nWhat was the grade did " << recordPrintName << " get?";
+                    cout << "\n0. Not Achieved\n1. Achieved\n2. Merit\n3. Excellence";
+                    cout << "\n\nSelect your option: ";
+                    gradesInput = getInt(0, 3);
+                    for (int i = 0; i < classroomRecords[recordClass].students[recordStudent].subjectGrades.size(); i++) {
+                        if (classroomRecords[recordClass].students[recordStudent].subjectGrades[i][0] == subjectInput) {
+                            classroomRecords[recordClass].students[recordStudent].subjectGrades[i][1] = gradesInput;
+                            break;
+                        }
+                    }
+
+                    cout << "\n\nWould you like to edit more grades?\n1. Yes\n2.No\nSelect your option: ";
+                    input = getInt(1, 2);
+                    if (input = 2)
+                        gradesLoop = false;
+                }
+            }
+
+            cout << "\n\nWould you like to continue editting " << recordPrintName << " record?";
+            cout << "\n1.Yes\n2.No\nSelect your option : ";
+            input = getInt(1, 2);
+            if (input = 2)
+                editRecordLoop = false;
+        }
+        cout << "\n\nWould you like to edit another students record?";
+        cout << "\n1.Yes\n2.No\nSelect your option : ";
+        input = getInt(1, 2);
+        if (input = 2)
+            recordsLoop = false;
+    }
+}
+
+// View Record
+void viewRecord() {
+
+    int input;
+    int maxI;
+    string viewRecordName;
+    char viewRecordGender;
+    string viewRecordClass;
+    int viewRecordGrade;
+    int recordClass, recordStudent;
+    bool looping = true;
+
+    while (looping = true) {
+        cout << "\nWho is the teacher of the student who's record you want to edit?";
+        for (int i = 0; i < classroomRecords.size(); i++) {
+            cout << "\n" << i + 1 << ". " << getTeacher(classroomRecords[i].classNumber); //Will print the classrooms in a list for user to select
+            maxI = i;
+        }
+        input = getInt(1, maxI);
+        recordClass = input--;
+
+        cout << "\nSelect out of the following students who's record you'd like to edit";
+        for (int i = 0; i < classroomRecords[input].students.size(); i++) {
+            cout << "\n" << i + 1 << ". " << classroomRecords[recordClass].students[i].name;
+            maxI = i;
+        }
+        input = getInt(1, maxI);
+        recordStudent = input--;
+        viewRecordName = classroomRecords[recordClass].students[recordStudent].name;
+
+        cout << "\n\n\nCurrently viewing " << viewRecordName << "'s Record:";
+        cout << "\n\nName: " << viewRecordName;
+        viewRecordGender = classroomRecords[recordClass].students[recordStudent].gender;
+        cout << "\nGender: ";
+        switch (viewRecordGender) {
+        case 0:
+            cout << "Male";
+        case 1:
+            cout << "Female";
+        case 2:
+            cout << "Non-binary";
+        }
     }
 }
 
