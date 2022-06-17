@@ -90,6 +90,9 @@ vector<classroom> classroomRecords = {
     )*/
 };
 
+// Teachers
+vector<string> teachers = {}; // name, classroom number
+
 // Convert these vectors to files if time allows
 vector<string> admins = {
     "Jayden", "e5c45796ab12b638d3ed06c71747625f018a74c3c83b32ef4429a9c0b5da5a95", // letmein123
@@ -223,6 +226,20 @@ string getSpaced() {
     std::getline(cin, input);
     return input;
 }
+
+// Get teacher name
+string getTeacher(int classNumber) {
+    if (std::find(teachers.begin(), teachers.end(), std::to_string(classNumber)) != teachers.end())
+        return teachers[std::find(teachers.begin(), teachers.end(), std::to_string(classNumber)) - teachers.begin() - 1];
+    else return "Unknown";
+}
+// Get teacher name overload where classNum is string
+string getTeacher(string classNumber) {
+    if (std::find(teachers.begin(), teachers.end(), classNumber) != teachers.end())
+        return teachers[std::find(teachers.begin(), teachers.end(), classNumber) - teachers.begin() - 1];
+    else return "Unknown";
+}
+
 
 // Saves all classroom data stored in classroomRecords
 void saveClassrooms() {
