@@ -491,6 +491,110 @@ void teacherMenu(string name) {
     return;
 }
 
+// Creates a student record (Admin)
+void adminRecordStudent() {
+    bool makingRecords = true;
+
+    while (makingRecords = true) {
+
+        bool loopAgain = true;
+        string studentsName;
+        int studentsGender, subject, subjectGrade, control;
+        vector<vector<int>> studentsSubjects; // Creates vectors within a vector that allows us to easily transfer data back to the structure
+        vector<int> newSubject; // This allows us to store the subject and the grade under one variable
+
+        system("cls"); // Clears all previous code in termonal to avoid screen clutter
+
+        cout << "\nWhat is the students full name: ";
+        cin.ignore(); // Allows the use of spaces in the string 
+        getline(cin, studentsName);
+        
+        while (loopAgain = true) {
+            cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
+            cin >> studentsGender;
+            if (studentsGender != 1 || 2 || 3) 
+                cout << "\nThat is not a valid. Please try again.";
+            else
+                loopAgain = false; // Breaks the loop if given a valid answer
+        }
+        
+        for (subject = 0; subject < 3; subject++) {
+            cout << "\n" << 3 - subject << " subjects left to register.";
+            switch (subject) {
+            case 0:
+                cout << "\nCurrently registering Maths. ";
+            case 1:
+                cout << "\nCurrently registering English. ";
+            case 2:
+                cout << "\nCurrently registering History. ";
+            }
+            cout << "What was " << studentsName << "'s grade (0:NA, 1:A, 2:M, 3:E): ";
+            cin >> subjectGrade;
+
+            if (studentsGender != 0 || 1 || 2 || 3) {
+                subject--;
+                cout << "\nThat is not a valid. Please try again.";
+            }
+            else {
+                newSubject.push_back(subject);
+                newSubject.push_back(subjectGrade);
+                studentsSubjects.push_back(newSubject);
+            }
+        }
+        student newStudent = student(studentsName, studentsGender, studentsSubjects);
+
+        cout << "\n\nDo you want to create another student record (1. Yes, 2. No):";
+        cin >> control;
+        if (control != 1)
+            makingRecords = false;
+    }
+}
+
+// Edit a student record (Admin)
+void adminEditStudentRecord() {
+
+    bool editRecords = true;
+
+    while (editRecords = true) {
+        int input;
+        int displayNum;
+        int recordClass;
+        int recordStudent;
+        bool looping = true;
+
+        system("cls");
+
+        cout << "\nWhat classroom is the student who's record you want to change in?";
+        for (int i = 0; i < classroomRecords.size(); i++)
+            cout << "\n" << i + 1 << ". " << classroomRecords[i]; //Will print the classrooms in a list for user to select
+
+        while (looping = true) {
+            cout << "\nSelect the classroom (numeric): ";
+            cin >> input;
+            if ((input - 1) > classroomRecords.size()) //
+                cout << "\nThat is not a valid option.\nPlease input a vaild number: ";
+            else
+                looping = false;
+        }
+        looping = true;
+        recordClass = input--;
+
+        cout << "\nSelect out of the following students who's record you'd like to edit";
+        for (int i = 0; i < classroomRecords[input].students.size(); i++)
+            cout << "\n" << i + 1 << ". " << classroomRecords[recordClass].students[i].name;
+
+        while (looping = true) {
+            cout << "\nSelect the student (numeric): ";
+            cin >> input;
+            if ((input - 1) > classroomRecords[recordClass].students.size())
+                cout << "\nThat is not a valid option.\nPlease input a vaild number: ";
+            else
+                looping = false;
+        }
+        recordStudent = input--;
+    }
+}
+
 // Admin controls menu
 void adminMenu(string username) {
     system("cls");
