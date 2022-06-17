@@ -1234,7 +1234,9 @@ void adminLogin()
 
 void contactInfo()
 {
+    cout << "+------------------------------+\n";
     cout << "Mebee School Contact Information\n";
+    cout << "+------------------------------+\n";
     cout << schoolName << endl;
     cout << schoolAddress << endl;
     cout << schoolPhoneNumber << endl;
@@ -1257,7 +1259,7 @@ void functionsEvents()
         cout << "+-------------------------+\n";
         cout << "Recent Mebee School Events\n";
         cout << "+-------------------------+\n";
-
+        //output recentEvents vector
         for (int i = 0; i < recentEvents.size(); i++) {
             for (int j = 0; j < recentEvents[i].size(); j++)
                 cout << recentEvents[i][j] << " ";
@@ -1268,6 +1270,7 @@ void functionsEvents()
         cout << "+---------------------------+\n";
         cout << "Upcoming Mebee School Events\n";
         cout << "+---------------------------+\n";
+        //output upcomingEvents vector
         for (int i = 0; i < upcomingEvents.size(); i++) {
             for (int j = 0; j < upcomingEvents[i].size(); j++)
                 cout << upcomingEvents[i][j] << " ";
@@ -1290,6 +1293,7 @@ void importantDates()
         cout << "+---------------------------+\n";
         cout << "           Term One          \n";
         cout << "+---------------------------+\n";
+        //output term 1 vector
         for (int i = 0; i < term1Dates.size(); i++) {
             for (int j = 0; j < term1Dates[i].size(); j++)
                 cout <<term1Dates[i][j] << "";
@@ -1300,6 +1304,7 @@ void importantDates()
         cout << "+---------------------------+\n";
         cout << "           Term Two          \n";
         cout << "+---------------------------+\n";
+        //output term 2 vector
         for (int i = 0; i < term2Dates.size(); i++) {
             for (int j = 0; j < term2Dates[i].size(); j++)
                 cout << term2Dates[i][j] << "";
@@ -1310,6 +1315,7 @@ void importantDates()
         cout << "+---------------------------+\n";
         cout << "          Term Three         \n";
         cout << "+---------------------------+\n";
+        //output term 3 vector
         for (int i = 0; i < term3Dates.size(); i++) {
             for (int j = 0; j < term3Dates[i].size(); j++)
                 cout << term3Dates[i][j] << "";
@@ -1320,6 +1326,7 @@ void importantDates()
         cout << "+---------------------------+\n";
         cout << "           Term Four         \n";
         cout << "+---------------------------+\n";
+        //output term 4 vector
         for (int i = 0; i < term4Dates.size(); i++) {
             for (int j = 0; j < term4Dates[i].size(); j++)
                 cout << term4Dates[i][j] << "";
