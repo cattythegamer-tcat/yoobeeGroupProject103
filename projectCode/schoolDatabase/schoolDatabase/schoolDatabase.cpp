@@ -112,7 +112,6 @@ vector<string> subjectOrder = {
     "Music"
 };
 
-// Will be sorted by date
 vector<vector<string>> recentEvents = {
     // Name (For menu) - Description (For when viewing full article)
     {"Mebee School Dance", "On the 2nd of May Mebee celebrated its 1500th anniversary with a evening to remember, including a student band performance and a meet-in-greet with local enviromentalist Morgoth Bauglir!"},
@@ -794,7 +793,8 @@ void adminMenu(string username) {
         // Some vectors, strings etc must be initialized here, since they can't be initialized inside of switch statement
         vector<int> classroomNums = {};
         vector<vector<string>> loadedParentAccounts;
-        string parentUsername, parentName, fetchedParent, fetchedName, password, rePassword, studentName;
+        string parentUsername, parentName, fetchedParent, fetchedName, password, 
+            rePassword, studentName, eventName, eventDescription;
         // File stream declarations
         ifstream fileIn;
         ofstream fileOut;
@@ -811,9 +811,11 @@ void adminMenu(string username) {
             "4. Update parent record\n" <<
             "5. View student record/s\n" <<
             "6. Update student record\n" <<
-            "7. Logout\n" <<
+            "7. Update events\n" << 
+            "8. Update term dates\n" <<
+            "9. Logout\n" <<
             ": ";
-        adminOption = getInt(1, 7);
+        adminOption = getInt(1, 9);
         // Individual option code
         switch (adminOption) {
             // View classroom records
@@ -1059,7 +1061,7 @@ void adminMenu(string username) {
                 fileIn.close();
                 break;
             }
-            // Update parent record
+        // Update parent record
         case 4:
             fileIn.open("parentAccounts.csv");
             if (!fileIn.is_open()) {
@@ -1194,7 +1196,7 @@ void adminMenu(string username) {
             }
             fileOut.close();
             break;
-            // View student records
+        // View student records
         case 5:
             // View options
             int studentRecordViewOption;
@@ -1364,11 +1366,66 @@ void adminMenu(string username) {
                 else cout << "\nNo students found under criteria!" << endl;
                 break;
             }
-            // Update student records
+        // Update student records
         case 6:
             break;
-            // Return to main menu
+        // Update events
         case 7:
+            int eventManipOption, eventGroup, targetEvent; // Group being either upcoming or recent
+            cout << "1. Add event\n" <<
+                "2. Update event\n" <<
+                "3. Remove event\n" <<
+                "4. Shift upcoming event to recent event\n"
+                "5. Cancel\n: ";
+            eventManipOption = getInt(1, 5);
+            if (eventManipOption == 5) continue;
+            if (eventManipOption == 4) eventGroup = 1;
+            else {
+                cout << "Enter time group (1: Upcoming, 2: Recent): ";
+                eventGroup = getInt(1, 2);
+            }
+
+            if (eventManipOption != 1) {
+                cout << "Select event from below: ";
+                for (int eventIdx = 0; eventIdx < (eventGroup == 1 ? upcomingEvents.size() : recentEvents.size()); eventIdx++) {
+                    cout << "\n\t" << eventIdx + 1 << ". " <<
+                        (eventGroup == 1 ? upcomingEvents[eventIdx][0] : recentEvents[eventIdx][0]);
+                }
+                cout << "\n: ";
+                targetEvent = getInt(1, (eventGroup == 1 ? upcomingEvents.size() : recentEvents.size())) - 1;
+            }
+            if (eventManipOption == 1 || eventManipOption == 2) {
+                cout << "Enter new event name: ";
+                eventName = getSpaced();
+                cout << "Enter event description below:\n";
+                eventDescription = getSpaced();
+            }
+
+            switch (eventManipOption) {
+            case 1:
+                if (eventGroup == 1) upcomingEvents.push_back({ eventName, eventDescription });
+                else recentEvents.push_back({ eventName, eventDescription });
+                break;
+            case 2:
+                if (eventGroup == 1) upcomingEvents[targetEvent] = { eventName, eventDescription };
+                else recentEvents[targetEvent] = {eventName, eventDescription};
+                break;
+            case 3:
+                if (eventGroup == 1) upcomingEvents.erase(upcomingEvents.begin() + targetEvent);
+                else recentEvents.erase(recentEvents.begin() + targetEvent);
+                break;
+            case 4:
+                recentEvents.push_back(upcomingEvents[targetEvent]);
+                upcomingEvents.erase(upcomingEvents.begin() + targetEvent);
+                break;
+            }
+            cout << "Update successful!\n";
+            break;
+        // Update dates
+        case 8:
+            break;
+        // Return to main menu
+        case 9:
             system("cls");
             return;
         }
@@ -1584,26 +1641,37 @@ void contactInfo()
 // Event info viewing
 void functionsEvents()
 {
-    int functionsEventsInput, recentInput, upcomingInput;
+    int functionsEventsInput;
 
-    cout << "Mebee College Functions and Events Page\n";
-    cout << " Date : June 29th 2022\n";
-    cout << "Please choose an option below\n";
-    cout << "1. Recent Functions & Events\n2. Upcoming Functions & Events";
+    cout << "\nMebee School Recent and Upcoming Events\n\n";
+    cout << "Please choose one of the options below:\n";
+    cout << "1. Recent Functions & Events\n2. Upcoming Functions & Events\n";
     cin >> functionsEventsInput;
+    cout << endl;
 
     switch (functionsEventsInput)
     {
     case 1:
-        cout << "Recent Functions & Events\n";
-        cout << "1. Matariki\n2. Mebee School Fair\n3. Mebee School Dance\n";
-        cout << "Please choose an option\n";
-        cin >> recentInput;
+        cout << "+-------------------------+\n";
+        cout << "Recent Mebee School Events\n";
+        cout << "+-------------------------+\n";
+        //output recentEvents vector
+        for (int i = 0; i < recentEvents.size(); i++) {
+            for (int j = 0; j < recentEvents[i].size(); j++)
+                cout << recentEvents[i][j] << " ";
+            cout << endl;
+        }
         break;
     case 2:
-        cout << "Upcoming Functions & Events\n";
-        cout << "1. Midterm Assessments\n2.";
-
+        cout << "+---------------------------+\n";
+        cout << "Upcoming Mebee School Events\n";
+        cout << "+---------------------------+\n";
+        //output upcomingEvents vector
+        for (int i = 0; i < upcomingEvents.size(); i++) {
+            for (int j = 0; j < upcomingEvents[i].size(); j++)
+                cout << upcomingEvents[i][j] << " ";
+            cout << endl;
+        }
         break;
     }
 }
@@ -1671,7 +1739,6 @@ int main()
 
     while (mainMenuActive == true)
     {
-        system("cls");
         cout << "Welcome to Mebee College\n\n"
             << "Please choose an option from the menu\n"
             << "1. School Functions & Events\n"
