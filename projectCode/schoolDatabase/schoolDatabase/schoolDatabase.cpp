@@ -16,6 +16,7 @@
 using std::cin;
 using std::cout;
 using std::endl;
+using std::getline;
 
 using std::string;
 using std::vector;
@@ -219,10 +220,10 @@ char getChar(string options = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVW
 
 // Returns a string with spaces
 string getSpaced() {
-    string input;
+    string input = "";
     if (cin.peek() != '\n') cin.putback('\n'); // Stops first char from being omitted during cin
     cin.ignore();
-    std::getline(cin, input);
+    getline(cin, input);
     return input;
 }
 
@@ -793,8 +794,10 @@ void adminMenu(string username) {
         // Some vectors, strings etc must be initialized here, since they can't be initialized inside of switch statement
         vector<int> classroomNums = {};
         vector<vector<string>> loadedParentAccounts;
+        vector<string>* termPtrArr[4] = { &term1Dates, &term2Dates, &term3Dates, &term4Dates };
+        vector<string>* termPtr;
         string parentUsername, parentName, fetchedParent, fetchedName, password, 
-            rePassword, studentName, eventName, eventDescription;
+            rePassword, studentName, eventName, eventDescription, dateDescription;
         // File stream declarations
         ifstream fileIn;
         ofstream fileOut;
@@ -1372,21 +1375,23 @@ void adminMenu(string username) {
         // Update events
         case 7:
             int eventManipOption, eventGroup, targetEvent; // Group being either upcoming or recent
+            // Get event manipulation option
             cout << "1. Add event\n" <<
-                "2. Update event\n" <<
+                "2. Update event\n" << // Essentially creates a new event, but at a pre-existing event location
                 "3. Remove event\n" <<
                 "4. Shift upcoming event to recent event\n"
                 "5. Cancel\n: ";
             eventManipOption = getInt(1, 5);
-            if (eventManipOption == 5) continue;
-            if (eventManipOption == 4) eventGroup = 1;
-            else {
+            if (eventManipOption == 5) continue; // Exit
+            if (eventManipOption == 4) eventGroup = 1; // Shift event to recent
+            else { // Get time group
                 cout << "Enter time group (1: Upcoming, 2: Recent): ";
                 eventGroup = getInt(1, 2);
             }
 
-            if (eventManipOption != 1) {
+            if (eventManipOption != 1) { // When adding an event (Option 1), no need to select a pre-existing event
                 cout << "Select event from below: ";
+                // Displays all the events in time group
                 for (int eventIdx = 0; eventIdx < (eventGroup == 1 ? upcomingEvents.size() : recentEvents.size()); eventIdx++) {
                     cout << "\n\t" << eventIdx + 1 << ". " <<
                         (eventGroup == 1 ? upcomingEvents[eventIdx][0] : recentEvents[eventIdx][0]);
@@ -1394,35 +1399,68 @@ void adminMenu(string username) {
                 cout << "\n: ";
                 targetEvent = getInt(1, (eventGroup == 1 ? upcomingEvents.size() : recentEvents.size())) - 1;
             }
-            if (eventManipOption == 1 || eventManipOption == 2) {
+
+            if (eventManipOption == 1 || eventManipOption == 2) { // Gets new event information (For adding & editing events)
                 cout << "Enter new event name: ";
                 eventName = getSpaced();
                 cout << "Enter event description below:\n";
                 eventDescription = getSpaced();
             }
-
+            // Applies changes to event vector
             switch (eventManipOption) {
-            case 1:
+            case 1: // Add
                 if (eventGroup == 1) upcomingEvents.push_back({ eventName, eventDescription });
                 else recentEvents.push_back({ eventName, eventDescription });
                 break;
-            case 2:
+            case 2: // Update
                 if (eventGroup == 1) upcomingEvents[targetEvent] = { eventName, eventDescription };
                 else recentEvents[targetEvent] = {eventName, eventDescription};
                 break;
-            case 3:
+            case 3: // Remove
                 if (eventGroup == 1) upcomingEvents.erase(upcomingEvents.begin() + targetEvent);
                 else recentEvents.erase(recentEvents.begin() + targetEvent);
                 break;
-            case 4:
+            case 4: // Shift upcoming to recent
                 recentEvents.push_back(upcomingEvents[targetEvent]);
                 upcomingEvents.erase(upcomingEvents.begin() + targetEvent);
                 break;
             }
             cout << "Update successful!\n";
+            saveSchool();
             break;
         // Update dates
         case 8:
+            int dateSelected, dateOption;
+            // Target term
+            cout << "Enter term (1, 2, 3, 4): ";
+            termPtr = termPtrArr[getInt(1, 4)-1];
+            // Term manipulation options
+            cout << "1. Add date\n2. Edit date\n3. Remove date\n: ";
+            dateOption = getInt(1, 3);
+            if (dateOption != 1) { // Gets target date (Not needed for adding)
+                cout << "Select date from below: ";
+                for (int dateIdx = 0; dateIdx < (*termPtr).size(); dateIdx++)
+                    cout << "\n\t" << dateIdx + 1 << ". " << (*termPtr)[dateIdx];
+                cout << "\n: ";
+                dateSelected = getInt(1, (*termPtr).size()) - 1;
+            }
+            if (dateOption != 3) { // Gets new date description (Not needed for removing)
+                cout << "Enter new date description below:\n";
+                dateDescription = getSpaced();
+            }
+            switch (dateOption) {
+            case 1: // Add
+                (*termPtr).push_back(dateDescription);
+                break;
+            case 2:// Update
+                (*termPtr)[dateSelected] = dateDescription;
+                break;
+            case 3: // Remove
+                (*termPtr).erase((*termPtr).begin() + dateSelected);
+                break;
+            }
+            cout << "Update successful!\n";
+            saveSchool();
             break;
         // Return to main menu
         case 9:
@@ -1447,8 +1485,7 @@ void adminRecordStudent() {
         system("cls"); // Clears all previous code in termonal to avoid screen clutter
 
         cout << "\nWhat is the students full name: ";
-        cin.ignore(); // Allows the use of spaces in the string 
-        getline(cin, studentsName);
+        studentsName = getSpaced();
 
         while (loopAgain = true) {
             cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
@@ -1687,43 +1724,48 @@ void importantDates()
     switch (importantDateInput)
     {
     case 1:
-        cout << "Term 1: 3rd February - 14th April 2022\n\n";
-        cout << "Tuesday 1st February       Teacher only day\n";
-        cout << "Wednesday 2nd February     Teacher only day\n";
-        cout << "Thursday 3rd February      Learning conferences\n";
-        cout << "Friday 4th February        Learning conferences\n";
-        cout << "Tuesday 8th February       Term 1 classes start\n";
-        cout << "Thursday 14th April        Term 1 ends\n\n";
-        cout << "Public Holidays\n";
-        cout << "Monday 7th February        Waitangi Day observed\n";
-        cout << "Friday 15th April  	    Good Friday\n";
-        cout << "Term 1 Holidays            Saturday 16th April - Sunday 1st May 2022\n";
-        cout << "School holidays includes Easter Monday, Easter Tuesday and ANZAC day.\n";
+        cout << "+---------------------------+\n";
+        cout << "           Term One          \n";
+        cout << "+---------------------------+\n";
+        //output term 1 vector
+        for (int i = 0; i < term1Dates.size(); i++) {
+            for (int j = 0; j < term1Dates[i].size(); j++)
+                cout << term1Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     case 2:
-        cout << "Term 2: 2nd May - 8th July 2022\n\n";
-        cout << "Monday 2nd May 	        Term 2 classes start\n";
-        cout << "Friday 3rd June            Teacher only day\n";
-        cout << "Friday 8th July            Teacher only day\n\n";
-        cout << "Public Holidays\n";
-        cout << "Monday 6th June  	        Queens Birthday\n";
-        cout << "Friday 24th  June          Matariki\n";
-        cout << "Term 2 Holidays            Saturday 9th July - Sunday 24th July 2022\n";
+        cout << "+---------------------------+\n";
+        cout << "           Term Two          \n";
+        cout << "+---------------------------+\n";
+        //output term 2 vector
+        for (int i = 0; i < term2Dates.size(); i++) {
+            for (int j = 0; j < term2Dates[i].size(); j++)
+                cout << term2Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     case 3:
-        cout << "Term 3 25th July - 30th September 2022\n\n";
-        cout << "Monday 25th July           Term 3 classes start\n";
-        cout << "Friday 26th August         Teacher only day\n\n";
-        cout << "No Public holidays\n";
-        cout << "Term 3 Holidays            Saturday 1st October - Sunday 16th October 2022\n";
+        cout << "+---------------------------+\n";
+        cout << "          Term Three         \n";
+        cout << "+---------------------------+\n";
+        //output term 3 vector
+        for (int i = 0; i < term3Dates.size(); i++) {
+            for (int j = 0; j < term3Dates[i].size(); j++)
+                cout << term3Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     case 4:
-        cout << "Term 4 17th October - 16th December 2022\n\n";
-        cout << "Monday 17th October        Term 4 classes start\n";
-        cout << "Friday 21st October        Teacher only\n\n";
-        cout << "Public Holidays :\n";
-        cout << "Monday 24th October        Labour Day\n";
-        cout << "Term 4 Christmas school holidays start Saturday 17th December 2022\n";
+        cout << "+---------------------------+\n";
+        cout << "           Term Four         \n";
+        cout << "+---------------------------+\n";
+        //output term 4 vector
+        for (int i = 0; i < term4Dates.size(); i++) {
+            for (int j = 0; j < term4Dates[i].size(); j++)
+                cout << term4Dates[i][j] << "";
+            cout << endl;
+        }
         break;
     }
 }
