@@ -449,58 +449,83 @@ void parentRegister() {
 
 // Adds a new teacher
 void teacherRegister() {
-    string teachName;
-    char teachGen;
-    int teachDoB;
-    string teachEmail;
-    int teachPho;
-    int teachClassNum;
-    int teachYLvl;
-    string teachUn;
-    string Passw;
-    string Passw2;
-    string teachPassw;
-    bool looping = true;
+    string name, email, phoneNumber, username, password, rePassword;
+    int gender, birthDay, birthMonth, birthYear, teachClassNum, teachYLvl;
 
-    system("cls");
-    cout << "\n\nWhat is your First name: ";
-    cin.ignore();
-    getline(cin, teachName);
+    cout << "What is your full name: ";
+    name = getSpaced();
 
-    while (looping == true) {
-        cout << "\n\nWhat is your gender (m = Mr./f = Mrs.): ";
-        cin >> teachGen;
-        if (teachGen != 'm' || teachGen != 'f')
-            cout << "That is not a valid option: \n\n";
-        else
-            looping = false;
-    }
+    cout << "What is your gender (1:Male, 2:Female, 3:Non-Binary): ";
+    gender = getInt(1, 3);
 
-    cout << "\n\nWhat is you phone number: ";
-    cin >> teachPho;
+    cout << "What is your email address: ";
+    cin >> email;
 
-    cout << "\n\nWhat is your classroom number: ";
-    cin >> teachClassNum;
+    cout << "What is your phone number: ";
+    phoneNumber = getSpaced();
 
-    cout << "\n\nWhat year level do you teach: ";
-    cin >> teachYLvl;
-
-    cout << "\n\nWhat will your username be: ";
-    cin >> teachUn;
-
-    looping = true;
-    while (looping == true) {
-        cout << "\n\nPlease enter your password: ";
-        cin >> Passw;
-        cout << "\n\nEnter it again: ";
-        cin >> Passw2;
-        if (Passw != Passw2)
-            cout << "\n\nThe passwords do no match. Try again";
-        else {
-            teachPassw = Passw;
-            looping = false;
+    cout << "What is your classroom number: ";
+    while (true) {
+        teachClassNum = getInt();
+        if (std::find(teachers.begin(), teachers.end(), std::to_string(teachClassNum)) != teachers.end()) {
+            cout << "Teacher already assigned to class, please enter a different class number or contact the office.\nClass number: ";
+            continue;
         }
+        break;
     }
+
+    cout << "What year level do you teach: ";
+    teachYLvl = getInt();
+
+    cout << "Enter day of birth (1-31): ";
+    birthDay = getInt(1, 31);
+    cout << "Enter month of birth (1-12): ";
+    birthMonth = getInt(1, 12);
+    cout << "Enter year of birth (1900-2022): ";
+    birthYear = getInt(1900, 2022);
+
+    cout << "What will your username be: ";
+    cin >> username;
+
+    while (true) {
+        cout << "Please enter your password: ";
+        cin >> password;
+        cout << "Enter it again: ";
+        cin >> rePassword;
+        if (password != rePassword) cout << "The passwords do no match. Try again\n";
+        else break;
+    }
+
+    string hashedPassword = username + password;
+    SHA256 sha;
+    sha.update(hashedPassword);
+    uint8_t* digest = sha.digest();
+    password = SHA256::toString(digest);
+
+    // Load parent account file
+    ofstream teacherAccounts;
+    teacherAccounts.open("teacherAccounts.csv", std::ios::app); // Appends new parent to end of file
+    if (!teacherAccounts.is_open()) {
+        cout << "\nNo teacher account file found, ending registration attempt!\n";
+        return;
+    }
+    // Write new parent info to file
+    teacherAccounts << username << ","
+        << password << ","
+        << name << ","
+        << email << ","
+        << gender - 1 << ","
+        << birthDay << ","
+        << birthMonth << ","
+        << birthYear << ","
+        << phoneNumber << ","
+        << teachClassNum << ","
+        << teachYLvl;
+    // Close parent file
+    teacherAccounts << endl;
+    teacherAccounts.close();
+    loadClassrooms();
+    return;
 }
 
 // Teacher controls menu
@@ -514,9 +539,10 @@ void recordStudent() {
 
     while (makingRecords = true) {
 
-        bool loopAgain = true;
+        int studentsGender, studentRecordNumber, recordClass, maxSize, subject, subjectGrade, control, subjectInput, gradesInput;
+        char charInput;
+        bool loopAgain = true, gradesLoop = true;
         string studentsName;
-        int studentsGender, subject, subjectGrade, control;
         vector<vector<int>> studentsSubjects; // Creates vectors within a vector that allows us to easily transfer data back to the structure
         vector<int> newSubject; // This allows us to store the subject and the grade under one variable
 
@@ -524,105 +550,103 @@ void recordStudent() {
 
         cout << "\nWhat is the students full name: ";
         cin.ignore(); // Allows the use of spaces in the string 
-        getline(cin, studentsName);
+        studentsName = getSpaced();
         
-        while (loopAgain = true) {
-            cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
-            cin >> studentsGender;
-            if (studentsGender != 1 || 2 || 3) 
-                cout << "\nThat is not a valid. Please try again.";
-            else
-                loopAgain = false; // Breaks the loop if given a valid answer
-        }
-        
-        for (subject = 0; subject < 3; subject++) {
-            cout << "\n" << 3 - subject << " subjects left to register.";
-            switch (subject) {
-            case 0:
-                cout << "\nCurrently registering Maths. ";
-            case 1:
-                cout << "\nCurrently registering English. ";
-            case 2:
-                cout << "\nCurrently registering History. ";
-            }
-            cout << "What was " << studentsName << "'s grade (0:NA, 1:A, 2:M, 3:E): ";
-            cin >> subjectGrade;
+        cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
+        studentsGender = getInt(1, 3);
 
-            if (studentsGender != 0 || 1 || 2 || 3) {
-                subject--;
-                cout << "\nThat is not a valid. Please try again.";
+
+        for (int i = 0; i < classroomRecords.size(); i++) {
+            cout << "\n" << i + 1 << ". " << getTeacher(classroomRecords[i].classNumber); //Will print the teachers in a list for user to select
+            maxSize = i;
+        }
+        control = getInt(1, maxSize); // getInt receives input and checks if it is within the range listed 
+
+        recordClass = control--;
+
+        while (gradesLoop = true) {
+
+            cout << "\n\nWhat subject's grade do you want to edit?";
+            cout << "\n1. Maths\n2. Science\n3. English\n4. Health\n5. P.E.";
+            cout << "\n6.Digital Technologies\n7.Art\n8.Social Studies\n9.Music";
+            cout << "\n\nSelect your option: ";
+            subjectInput = getInt(1, 9) - 1;
+
+            cout << "\n\nWhat was the grade did " << studentsName << " get?";
+            cout << "\n0. Not Achieved\n1. Achieved\n2. Merit\n3. Excellence";
+            cout << "\n\nSelect your option: ";
+            gradesInput = getInt(0, 3);
+            for (int i = 0; i < classroomRecords[recordClass].students[studentRecordNumber].subjectGrades.size(); i++) { // Write student grade in a subject to a Vector
+                if (classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][0] == subjectInput) {
+                    classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][1] = gradesInput;
+                    break;
+                }
             }
-            else {
-                newSubject.push_back(subject);
-                newSubject.push_back(subjectGrade);
-                studentsSubjects.push_back(newSubject);
-            }
+
+            cout << "\n\nWould you like to edit more grades?\n'y'. Yes\n'n'. No\nSelect your option: ";
+            charInput = getChar("yn");
+            if (charInput = 'n')
+                gradesLoop = false;
         }
         student newStudent = student(studentsName, studentsGender, studentsSubjects);
 
-        cout << "\n\nDo you want to create another student record (1. Yes, 2. No):";
-        cin >> control;
-        if (control != 1)
+        cout << "\n\nDo you want to create another student record \n'y'. Yes\n'n'. No):";
+        control = getInt(1, 2);
+        if (control = 2)
             makingRecords = false;
     }
 }
 
-// Edit a student record (Admin)
+// Edit a student record
 void editStudentRecord() {
 
     bool recordsLoop = true;
 
     while (recordsLoop = true) {
         int input;
-        int maxI;
-        int recordClass, recordStudent;
+        char charInput;
+        int maxSize;
+        int recordClass, studentRecordNumber;
         bool validLooping = true, editRecordLoop = true;
 
         system("cls");
 
         cout << "\nWho is the teacher of the student who's record you want to edit?";
         for (int i = 0; i < classroomRecords.size(); i++) {
-            cout << "\n" << i + 1 << ". " << getTeacher(classroomRecords[i].classNumber); //Will print the classrooms in a list for user to select
-            maxI = i;
+            cout << "\n" << i + 1 << ". " << getTeacher(classroomRecords[i].classNumber); //Will print the teachers in a list for user to select
+            maxSize = i;
         }
-        input = getInt(1, maxI);
+        input = getInt(1, maxSize); // getInt receives input and checks if it is within the range listed 
         
         recordClass = input--;
 
         cout << "\nSelect out of the following students who's record you'd like to edit";
-        for (int i = 0; i < classroomRecords[input].students.size(); i++)
-            cout << "\n" << i + 1 << ". " << classroomRecords[recordClass].students[i].name;
-
-        while (validLooping = true) {
-            cout << "\nSelect the student (numeric): ";
-            cin >> input;
-            if ((input - 1) > classroomRecords[recordClass].students.size())
-                cout << "\nThat is not a valid option.\nPlease input a vaild number: ";
-            else
-                validLooping = false;
+        for (int i = 0; i < classroomRecords[input].students.size(); i++) {
+            cout << "\n" << i + 1 << ". " << classroomRecords[recordClass].students[i].name; //Will print the classrooms in a list for user to select
+            maxSize = i;
         }
-        recordStudent = input--;
+        input = getInt(1, maxSize);
+        studentRecordNumber = input--;
 
+        string recordPrintName = classroomRecords[recordClass].students[studentRecordNumber].name; // Saves student name so it can always be printed
         while (editRecordLoop = true) {
 
-            string recordPrintName = classroomRecords[recordClass].students[recordStudent].name;
-            string newRecordName;
 
             cout << "What would you like to edit about " << recordPrintName << "'s record?\n";
-            cout << "1. Name\n2. Gender\n3. Grades\n4. Exit\n\nSelect your option: ";
-            input = getInt(1, 4);
+            cout << "1. Name\n2. Gender\n3. Grades\n4. Delete Record\n5. Exit\n\nSelect your option: ";
+            input = getInt(1, 5);
 
             switch (input) {
             case 1:
                 cout << "\n\nWhat is the first and last name?\n";
-                newRecordName = getSpaced();
-                classroomRecords[recordClass].students[recordStudent].name = newRecordName;
+                recordPrintName = getSpaced();
+                classroomRecords[recordClass].students[studentRecordNumber].name = recordPrintName;
                 break;
             case 2:
                 cout << "\n\nWhat is " << recordPrintName << "'s gender?";
                 cout << "\n1. Male\n2. Female\n3. Non-Binary\n\nSelect your option: ";
                 input = getInt(1, 3) - 1;
-                classroomRecords[recordClass].students[recordStudent].gender = input;
+                classroomRecords[recordClass].students[studentRecordNumber].gender = input;
             case 3:
                 bool gradesLoop = true;
                 while (gradesLoop = true) {
@@ -639,18 +663,34 @@ void editStudentRecord() {
                     cout << "\n0. Not Achieved\n1. Achieved\n2. Merit\n3. Excellence";
                     cout << "\n\nSelect your option: ";
                     gradesInput = getInt(0, 3);
-                    for (int i = 0; i < classroomRecords[recordClass].students[recordStudent].subjectGrades.size(); i++) {
-                        if (classroomRecords[recordClass].students[recordStudent].subjectGrades[i][0] == subjectInput) {
-                            classroomRecords[recordClass].students[recordStudent].subjectGrades[i][1] = gradesInput;
+                    for (int i = 0; i < classroomRecords[recordClass].students[studentRecordNumber].subjectGrades.size(); i++) { // Write student grade in a subject to a Vector
+                        if (classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][0] == subjectInput) {
+                            classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][1] = gradesInput;
                             break;
                         }
                     }
 
-                    cout << "\n\nWould you like to edit more grades?\n1. Yes\n2.No\nSelect your option: ";
-                    input = getInt(1, 2);
-                    if (input = 2)
+                    cout << "\n\nWould you like to edit more grades?\n'y'. Yes\n'n'. No\nSelect your option: ";
+                    charInput = getChar("yn");
+                    if (charInput = 'n')
                         gradesLoop = false;
                 }
+            case 4:
+                char charInput;
+                cout << "\n\n\t!WARNING!\nOnce the student record has been deleted it cannot be recovered.\nDo you wish to continue?\n'y'. Yes\n'n'. No\n";
+                charInput = getChar("yn");
+                if (charInput = 'y') {
+                    cout << "\n\nDo you want to delete " << recordPrintName << "'s record?\nThis cannot be undone.\n'y'. Yes\n'n'. No\n";
+                    charInput = getChar("yn");
+                    if (charInput = 'y') {
+                        cout << "\n" << recordPrintName << "'s record has been deleted.";
+                        classroomRecords[recordClass].students.erase(classroomRecords[recordClass].students.begin() + recordClass); // Deletes the vector data matching the inputed variables
+                    }
+                }
+                break;
+            case 5:
+                editRecordLoop = false;
+                break;
             }
 
             cout << "\n\nWould you like to continue editting " << recordPrintName << " record?";
@@ -670,13 +710,9 @@ void editStudentRecord() {
 // View Record
 void viewRecord() {
 
-    int input;
-    int maxI;
-    string viewRecordName;
-    char viewRecordGender;
-    string viewRecordClass;
-    int viewRecordGrade;
-    int recordClass, recordStudent;
+    int input, maxI, recordClass, studentRecordNumber;
+    string viewRecordName, viewRecordClass, studentGradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence" };
+    char viewRecordGender, charInput;
     bool looping = true;
 
     while (looping = true) {
@@ -694,12 +730,12 @@ void viewRecord() {
             maxI = i;
         }
         input = getInt(1, maxI);
-        recordStudent = input--;
-        viewRecordName = classroomRecords[recordClass].students[recordStudent].name;
+        studentRecordNumber = input--;
+        viewRecordName = classroomRecords[recordClass].students[studentRecordNumber].name;
 
         cout << "\n\n\nCurrently viewing " << viewRecordName << "'s Record:";
         cout << "\n\nName: " << viewRecordName;
-        viewRecordGender = classroomRecords[recordClass].students[recordStudent].gender;
+        viewRecordGender = classroomRecords[recordClass].students[studentRecordNumber].gender;
         cout << "\nGender: ";
         switch (viewRecordGender) {
         case 0:
@@ -709,6 +745,15 @@ void viewRecord() {
         case 2:
             cout << "Non-binary";
         }
+
+        for (int i = 0; i < classroomRecords[recordClass].students[studentRecordNumber].subjectGrades.size(); i++) { //Print all the recorded grades
+            vector<int> subjectGrade = classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i];
+            cout << "\n" << subjectOrder[subjectGrade[0]] << ": " << studentGradeOptions[subjectGrade[1]];
+        }
+        cout << "\n\nWould you like to view another record?\n'y'. Yes\n'n'. No\n";
+        charInput = getChar("yn");
+        if (charInput = 'n')
+            looping = false;
     }
 }
 
@@ -1299,65 +1344,6 @@ void adminMenu(string username) {
             system("cls");
             return;
         }
-    }
-}
-
-// Creates a student record (Admin)
-void adminRecordStudent() {
-    bool makingRecords = true;
-
-    while (makingRecords = true) {
-
-        bool loopAgain = true;
-        string studentsName;
-        int studentsGender, subject, subjectGrade, control;
-        vector<vector<int>> studentsSubjects; // Creates vectors within a vector that allows us to easily transfer data back to the structure
-        vector<int> newSubject; // This allows us to store the subject and the grade under one variable
-
-        system("cls"); // Clears all previous code in termonal to avoid screen clutter
-
-        cout << "\nWhat is the students full name: ";
-        cin.ignore(); // Allows the use of spaces in the string 
-        getline(cin, studentsName);
-
-        while (loopAgain = true) {
-            cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
-            cin >> studentsGender;
-            if (studentsGender != 1 || 2 || 3)
-                cout << "\nThat is not a valid. Please try again.";
-            else
-                loopAgain = false; // Breaks the loop if given a valid answer
-        }
-
-        for (subject = 0; subject < 3; subject++) {
-            cout << "\n" << 3 - subject << " subjects left to register.";
-            switch (subject) {
-            case 0:
-                cout << "\nCurrently registering Maths. ";
-            case 1:
-                cout << "\nCurrently registering English. ";
-            case 2:
-                cout << "\nCurrently registering History. ";
-            }
-            cout << "What was " << studentsName << "'s grade (0:NA, 1:A, 2:M, 3:E): ";
-            cin >> subjectGrade;
-
-            if (studentsGender != 0 || 1 || 2 || 3) {
-                subject--;
-                cout << "\nThat is not a valid. Please try again.";
-            }
-            else {
-                newSubject.push_back(subject);
-                newSubject.push_back(subjectGrade);
-                studentsSubjects.push_back(newSubject);
-            }
-        }
-        student newStudent = student(studentsName, studentsGender, studentsSubjects);
-
-        cout << "\n\nDo you want to create another student record (1. Yes, 2. No):";
-        cin >> control;
-        if (control != 1)
-            makingRecords = false;
     }
 }
 
