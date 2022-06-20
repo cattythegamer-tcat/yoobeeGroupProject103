@@ -114,20 +114,53 @@ vector<string> subjectOrder = {
     "Music"
 };
 
+// Will be sorted by date
 vector<vector<string>> recentEvents = {};
 
 vector<vector<string>> upcomingEvents = {};
 
-vector<string> term1Dates = {};
+vector<string> term1Dates = {
+    "Term 1: 3rd February - 14th April\n",
+    "Tuesday 1st February       Teacher only day",
+    "Wednesday 2nd February     Teacher only day",
+    "Thursday 3rd February      Learning conferences",
+    "Friday 4th February        Learning conferences",
+    "Monday 7th February        Waitangi Day observed",
+    "Tuesday 8th February       Term 1 classes start",
+    "Friday 15th April  	    Good Friday"
+};
 
-// Populate with correct data
-vector<string> term2Dates = {};
 
-vector<string> term3Dates = {};
+vector<string> term2Dates = {
+    "Term 2: 2nd May - 8th July 2022\n",
+    "Monday 2nd May 	           Term 2 classes start",
+    "Friday 3rd June            Teacher only day",
+    "Friday 8th July            Teacher only day",
+    "Public Holidays",
+    "Monday 6th June  	   Queens Birthday",
+    "Friday 24th  June          Matariki",
+    "Term 2 Holidays            Saturday 9th July - Sunday 24th July 2022\n"
+};
 
-vector<string> term4Dates = {};
+vector<string> term3Dates = {
+  "Term 3 25th July - 30th September 2022",
+  "Monday 25th July           Term 3 classes start",
+  "Friday 26th August         Teacher only day",
+  "No Public holidays",
+  "Term 3 Holidays            Saturday 1st October - Sunday 16th October 2022\n",
+};
+
+vector<string> term4Dates = {
+  "Term 4 17th October - 16th December 2022\n",
+  "Monday 17th October        Term 4 classes start",
+  "Friday 21st October        Teacher only",
+  "Public Holidays :\n",
+  "Monday 24th October        Labour Day",
+  "Term 4 Christmas school holidays start Saturday 17th December 2022\n",
+};
 
 string schoolName = "";
+string schoolAddress = "Level 6, Wellington Railway Station\nWellington\nNew Zealand";
 string schoolPhoneNumber = "";
 string schoolEmailAddress = "";
 
@@ -1990,7 +2023,13 @@ void adminLogin()
 // School contact info viewing
 void contactInfo()
 {
-    cout << "Mebee College Contact Information\n";
+    cout << "+------------------------------+\n";
+    cout << "Mebee School Contact Information\n";
+    cout << "+------------------------------+\n";
+    cout << schoolName << endl;
+    cout << schoolAddress << endl;
+    cout << schoolPhoneNumber << endl;
+    cout << schoolEmailAddress << endl;
 }
 
 // Event info viewing
@@ -2099,7 +2138,7 @@ int main()
 
     while (mainMenuActive == true)
     {
-        cout << "\nWelcome to Mebee College\n\n"
+        cout << "\nWelcome to " << schoolName << "\n\n"
             << "Please choose an option from the menu\n"
             << "1. School Functions & Events\n"
             << "2. Term Dates\n"
