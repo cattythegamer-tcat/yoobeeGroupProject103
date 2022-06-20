@@ -1586,7 +1586,6 @@ void adminRecordStudent() {
 
         cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
         studentsGender = getInt(1, 4);
-
         for (subject = 0; subject < 3; subject++) {
             cout << "\n" << 3 - subject << " subjects left to register.";
             switch (subject) {
@@ -1599,6 +1598,7 @@ void adminRecordStudent() {
             }
             cout << "What was " << studentsName << "'s grade (0:NA, 1:A, 2:M, 3:E): ";
             subjectGrade = getInt(0, 3);
+          
             newSubject.push_back(subject);
             newSubject.push_back(subjectGrade);
             studentsSubjects.push_back(newSubject);
