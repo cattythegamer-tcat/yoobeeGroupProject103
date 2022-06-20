@@ -1,9 +1,9 @@
 ﻿  schoolDatabase.cpp
   The contents of <filesystem> are available only with C++17 or later.
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(356,55): warning C4834: discarding return value of function with 'nodiscard' attribute
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(844,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(856,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1286,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1398,104): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1440,59): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(434,55): warning C4834: discarding return value of function with 'nodiscard' attribute
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(922,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(934,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1364,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1478,104): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1523,59): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   schoolDatabase.vcxproj -> C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe
