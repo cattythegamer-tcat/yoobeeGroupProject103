@@ -72,23 +72,24 @@ vector<classroom> classroomRecords = {
     // Placeholder values
     /*
     classroom(1, {
-        student("John Doe", 1, {{1, 1}, {2, 2}, {3, 3}}),
-        student("Jane Doe", 1, {{1, 2}, {2, 3}, {3, 1}}),
-        student("Jack Doe", 0, {{1, 3}, {2, 1}, {3, 2}})
+        student("John Doe", 1, {{1, 1, 1}, {2, 2, 1}, {3, 3, 2}}),
+        student("Jane Doe", 1, {{1, 2, 1}, {2, 3, 1}, {3, 1, 2}}),
+        student("Jack Doe", 0, {{1, 3, 1}, {2, 1, 1}, {3, 2, 2}})
         }
     ),
     classroom(2, {
-        student("Jill Doe", 1, {{1, 1}, {2, 2}, {3, 3}}),
-        student("Jared Doe", 0, {{1, 2}, {2, 3}, {3, 1}}),
-        student("Jenny Doe", 1, {{1, 3}, {2, 1}, {3, 2}})
+        student("Jill Doe", 1, {{1, 1, 2}, {2, 2, 1}, {3, 3, 3}}),
+        student("Jared Doe", 0, {{1, 2, 2}, {2, 3, 1}, {3, 1, 3}}),
+        student("Jenny Doe", 1, {{1, 3, 2}, {2, 1, 1}, {3, 2, 3}})
         }
     ),
     classroom(3, {
-        student("Jasmine Doe", 1, {{1, 1}, {2, 2}, {3, 3}}),
-        student("Jasper Doe", 0, {{1, 2}, {2, 3}, {3, 1}}),
-        student("Josie Doe", 1, {{1, 3}, {2, 1}, {3, 2}})
+        student("Jasmine Doe", 1, {{1, 1, 1}, {2, 2, 4}, {3, 3, 1}}),
+        student("Jasper Doe", 0, {{1, 2, 1}, {2, 3, 4}, {3, 1, 1}}),
+        student("Josie Doe", 1, {{1, 3, 1}, {2, 1, 4}, {3, 2, 1}})
         }
-    )*/
+    )
+    */
 };
 
 // Teachers
@@ -203,7 +204,7 @@ void saveSchool() {
     ofstream masterClassList;
     masterClassList.open("masterClassList.csv", ofstream::trunc); // Clears current masterFile
 
-    if (!masterClassList.is_open()) {
+    if (!masterClassList.is_open()) { // Checks file exists
         cout << "\nNo master class list file created, ending classroom save attempt!\n";
     } else {
         ofstream classManager; // Opener for each class file
@@ -220,7 +221,8 @@ void saveSchool() {
                     << "," << classroomRecords[room].students[studentNum].gender;
                 for (int sub = 0; sub < classroomRecords[room].students[studentNum].subjectGrades.size(); sub++) {
                     classManager << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][0]
-                        << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][1];
+                        << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][1]
+                        << "," << classroomRecords[room].students[studentNum].subjectGrades[sub][2];
                 }
                 classManager << endl;
             }
@@ -230,40 +232,47 @@ void saveSchool() {
         }
         masterClassList.close();
     }
-
+    // Opens general information file
     ofstream generalInfo;
     generalInfo.open("generalInfo.csv", ofstream::trunc);
-    if (!generalInfo.is_open()) {
+    if (!generalInfo.is_open()) { // Checks file exists
         cout << "\nNo general info file created, ending save attempt\n";
     }
     else {
+        // Stores school info variables
         generalInfo << schoolName << "\n" <<
             schoolEmailAddress << "\n" <<
             schoolPhoneNumber << endl;
+        // Stores recent events vector
         for (int recentIdx = 0; recentIdx < recentEvents.size(); recentIdx++) {
             if (recentIdx != 0) generalInfo << ",";
             generalInfo << recentEvents[recentIdx][0] << "," << recentEvents[recentIdx][1];
         }
+        // Stores upcoming events vector
         for (int upcomingIdx = 0; upcomingIdx < upcomingEvents.size(); upcomingIdx++) {
             if (upcomingIdx == 0) generalInfo << endl;
             else generalInfo << ",";
             generalInfo << upcomingEvents[upcomingIdx][0] << "," << upcomingEvents[upcomingIdx][1];
         }
+        // Stores term 1 dates vector
         for (int termIdx = 0; termIdx < term1Dates.size(); termIdx++) {
             if (termIdx == 0) generalInfo << endl;
             else generalInfo << ",";
             generalInfo << term1Dates[termIdx];
         }
+        //  Term 2
         for (int termIdx = 0; termIdx < term2Dates.size(); termIdx++) {
             if (termIdx == 0) generalInfo << endl;
             else generalInfo << ",";
             generalInfo << term2Dates[termIdx];
         }
+        //  Term 3
         for (int termIdx = 0; termIdx < term3Dates.size(); termIdx++) {
             if (termIdx == 0) generalInfo << endl;
             else generalInfo << ",";
             generalInfo << term3Dates[termIdx];
         }
+        //  Term 4
         for (int termIdx = 0; termIdx < term4Dates.size(); termIdx++) {
             if (termIdx == 0) generalInfo << endl;
             else generalInfo << ",";
@@ -318,7 +327,7 @@ void loadSchool() {
                         studentGender = c - '0';
                         break;
                     default: // Grades
-                        if (dataPos % 2 == 0) studentGrades.push_back({ c - '0' });
+                        if ((dataPos-2) % 3 == 0) studentGrades.push_back({ c - '0' });
                         else studentGrades[studentGrades.size() - 1].push_back(c - '0');
                         break;
                     }
@@ -334,10 +343,11 @@ void loadSchool() {
     teachers = {""};
     ifstream teacherAccounts;
     teacherAccounts.open("teacherAccounts.csv");
-    if (!teacherAccounts.is_open()) {
+    if (!teacherAccounts.is_open()) { // Checks file exists
         cout << "\nNo teacher accounts, skipping.\n";
     } else {
         string teacherInfo;
+        // Loads each line in file
         while (std::getline(teacherAccounts, teacherInfo)) {
             int dataPos = 0;
             for (char& c : teacherInfo) {
@@ -354,7 +364,7 @@ void loadSchool() {
     // Load general info
     ifstream generalInfo;
     generalInfo.open("generalInfo.csv");
-    if (!generalInfo.is_open()) {
+    if (!generalInfo.is_open()) { // Checks file exists
         schoolName = "Unknown";
         schoolEmailAddress = "Unknown";
         schoolPhoneNumber = "Unknown";
@@ -362,6 +372,7 @@ void loadSchool() {
     } else {
         string infoRow;
         int rowNum = 0;
+        // Loads each line in file
         while (std::getline(generalInfo, infoRow)) {
             int dataPos = -1;
             infoRow = "," + infoRow;
@@ -500,7 +511,7 @@ void parentRegister() {
         cout << "Add another child (y\\n)? ";
         addChild = getChar("yn");
     }
-
+    // Calculates password match based off inputs
     string hashedPassword = username + password;
     SHA256 sha;
     sha.update(hashedPassword);
@@ -709,11 +720,14 @@ void parentMenu(string name, string hashedPass) {
         switch (parentOption) {
         // View child info
         case 1:
+            int childrenFound;
+            childrenFound = 0;
             // Fetch all children related to parent
             for (int classIdx = 0; classIdx < classroomRecords.size(); classIdx++) {
                 for (int studentIdx = 0; studentIdx < classroomRecords[classIdx].students.size(); studentIdx++) {
                     for (int childIdx = 0; childIdx < childrenInfo.size(); childIdx++) {
                         if (std::find(childrenInfo[childIdx].begin(), childrenInfo[childIdx].end(), classroomRecords[classIdx].students[studentIdx].name) != childrenInfo[childIdx].end()) {
+                            childrenFound++;
                             // Displays found student info
                             vector<string> caregiverInfosDups; // Initial version, which may contain repeated parent infos
                             vector<string> caregiverInfos; // Cleaned version, with only one instance of each parent
@@ -722,17 +736,19 @@ void parentMenu(string name, string hashedPass) {
                                 genderOptions[classroomRecords[classIdx].students[studentIdx].gender] <<
                                 " - Classroom No." << classroomRecords[classIdx].classNumber << " Teacher: " <<
                                 getTeacher(classroomRecords[classIdx].classNumber) <<
-                                "\nCurrent Term Grades:";
+                                "\nGrades:";
                             // Subject grades
                             for (int subjectIdx = 0; subjectIdx < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); subjectIdx++) {
                                 cout << "\n\t" <<
                                     subjectOrder[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][0]] <<
-                                    ": " << gradeOptions[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][1]];
+                                    ": " << gradeOptions[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][1]] << 
+                                    " - Term No." << classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][2];
                             }
                         }
                     }
                 }
             }
+            if (childrenFound == 0) cout << "\nNo children found!\n";
             break;
         // Edit account
         case 2:
@@ -936,7 +952,8 @@ void adminMenu(string username) {
                             for (int subjectIdx = 0; subjectIdx < subjectGradeCount; subjectIdx++) {
                                 vector<int> subjectGrade = classroomRecords[classroomIdx].students[studentIdx].subjectGrades[subjectIdx];
                                 cout << "\t\t" << subjectOrder[subjectGrade[0]] << ": "
-                                    << gradeOptions[subjectGrade[1]] << "\n";
+                                    << gradeOptions[subjectGrade[1]] << 
+                                    " Term No." << subjectGrade[2] << endl;
                             }
                         }
                     }
@@ -1309,7 +1326,8 @@ void adminMenu(string username) {
                             for (int subjectIdx = 0; subjectIdx < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); subjectIdx++) {
                                 cout << "\n\t" <<
                                     subjectOrder[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][0]] <<
-                                    ": " << gradeOptions[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][1]];
+                                    ": " << gradeOptions[classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][1]] <<
+                                    " - Term No." << classroomRecords[classIdx].students[studentIdx].subjectGrades[subjectIdx][2];
                             }
                             // Fetches caregiver info from file
                             fileIn.open("parentAccounts.csv");
@@ -1412,6 +1430,7 @@ void adminMenu(string username) {
                                     bool studentRelated = false, fetchingClassNum = true;
                                     for (char& c : fetchedParent) {
                                         if (c == ',') {
+                                            // Checks if student name matches requested student name
                                             if (currentInfoChunk.find(studentName) != string::npos) studentRelated = true;
                                             else if (studentRelated) {
                                                 if (fetchingClassNum) fetchingClassNum = false;
@@ -1835,7 +1854,7 @@ void importantDates()
     }
 }
 
-// Main Function
+// Main function (Executed on load)
 int main()
 {
     loadSchool();
