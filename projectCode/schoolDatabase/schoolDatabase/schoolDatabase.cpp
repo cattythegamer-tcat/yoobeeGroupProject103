@@ -168,6 +168,11 @@ string schoolEmailAddress = "";
 int getInt(int lowerLimit = 0, int upperLimit = 100000) {
     string input;
     cin >> input;
+    // Checks something has been inputted
+    if (input == "") {
+        cout << "Alert! Nothing inputted, please try again: ";
+        return getInt(lowerLimit, upperLimit);
+    }
     // Checks input is a number
     for (int inputChar = 0; inputChar < input.size(); inputChar++) {
         if (input[inputChar] < 47 || input[inputChar] > 57) {
@@ -211,8 +216,14 @@ string getSpaced() {
     if (cin.peek() != '\n') cin.putback('\n'); // Stops first char from being omitted during cin
     cin.ignore();
     getline(cin, input);
+    // Prevents , from breaking csv files
     if (input.find(",") != string::npos || input == ",") {
         cout << "Alert! Illegal character \",\" found, please re-input without this character:\n";
+        return getSpaced();
+    }
+    // Checks something has been inputted
+    if (input == "") {
+        cout << "Alert! Nothing inputted, please try again:\n";
         return getSpaced();
     }
     return input;
@@ -475,7 +486,6 @@ void loadSchool() {
 
 // Adds a new parent
 void parentRegister() {
-    classroomRecords[0].students[0].subjectGrades[0][0];
     // Parent variable declarations
     string name, email, contactNum, username, password = "", rePassword = "";
     char addChild = 'y'; // When this is 'n', stops adding children to children vector
@@ -905,50 +915,50 @@ void parentMenu(string name, string hashedPass) {
             return;
         }
     }
-    loadClassrooms();
-    return;
-}
-
-// Teacher controls menu
-void teacherMenu(string name) {
+    loadSchool();
     return;
 }
 
 // Creates a student record (Admin)
 void recordStudent() {
-    bool makingRecords = true;
+    if (classroomRecords.size() == 0) { // Checks there are classrooms loaded
+        cout << "Alert! No classes exist, cannot add students!";
+        return;
+    }
+    while (true) { // Allows for several students to be added
+        int gender, recordClass, subjectInput, gradeInput, termInput;
+        bool loopAgain = true, gradesLoop = true, foundClass = false;
+        string name;
+        vector<vector<int>> studentSubjects; // Grade storage vector
+        vector<int> newSubject; // This allows us to store the subject, grade, and term under one variable
 
-    while (makingRecords = true) {
-
-        int studentsGender, studentRecordNumber, recordClass, maxSize, subject, subjectGrade, subjectInput, gradesInput;
-        char charInput;
-        bool loopAgain = true, gradesLoop = true;
-        string studentsName;
-        vector<vector<int>> studentsSubjects; // Creates vectors within a vector that allows us to easily transfer data back to the structure
-        vector<int> newSubject; // This allows us to store the subject and the grade under one variable
-
-        system("cls"); // Clears all previous code in terminal to avoid screen clutter
-
+        // General student information
         cout << "\nWhat is the students full name: ";
-        studentsName = getSpaced();
-        
-        cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
-        studentsGender = getInt(1, 3);
+        name = getSpaced();
 
-        for (int i = 0; i < classroomRecords.size(); i++) {
-            cout << "\nClass No." << i + 1 << " " << getTeacher(classroomRecords[i].classNumber); //Will print the teachers in a list for user to select
-            maxSize = i;
+        cout << "What is the students gender (1. Male, 2. Female, 3. Other): ";
+        gender = getInt(1, 3) - 1;
+
+        cout << "Please enter class number of student: ";
+        while (!foundClass) { // Makes sure class exists
+            recordClass = getInt(); // getInt receives input and checks if it is within the range listed 
+            for (int classroomIdx = 0; classroomIdx < classroomRecords.size(); classroomIdx++) {
+                if (classroomRecords[classroomIdx].classNumber == recordClass) {
+                    recordClass = classroomIdx;
+                    foundClass = true;
+                    break;
+                }
+            }
+            if (foundClass) break;
+            cout << "Alert: Class doesn't exist, please try again: ";
         }
-        cout << "\nPlease enter class number of student: ";
-        recordClass = getInt(1, maxSize) - 1; // getInt receives input and checks if it is within the range listed 
-
-        // Adds student to class
-        classroomRecords[recordClass].students.push_back(student(studentsName, studentsGender, {}));
-        studentRecordNumber = classroomRecords[recordClass].students.size() - 1;
-
-        while (gradesLoop = true) {
+        
+        // Student grade information
+        cout << "Do you wish to add any subject grades to student (y/n): ";
+        if (getChar("yn") == 'n') gradesLoop = false;
+        while (gradesLoop) {
             // Get target subject
-            cout << "\n\nWhat subject do you want to add?";
+            cout << "\nWhat subject do you want to add?";
 
             for (int subjectIdx = 0; subjectIdx < subjectOrder.size(); subjectIdx++) {
                 cout << "\n" << subjectIdx + 1 << ". " << subjectOrder[subjectIdx];
@@ -956,193 +966,214 @@ void recordStudent() {
             cout << "\n: ";
             subjectInput = getInt(1, 9) - 1;
 
-            cout << "\n\nWhat was the grade did " << studentsName << " get?";
-            cout << "\n1. Not Achieved\n2. Achieved\n3. Merit\n4. Excellence";
-            cout << "\n\nSelect your option: ";
-            gradesInput = getInt(1, 4) - 1;
-            for (int i = 0; i < classroomRecords[recordClass].students[studentRecordNumber].subjectGrades.size(); i++) { // Write student grade in a subject to a Vector
-                if (classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][0] == subjectInput) {
-                    classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][1] = gradesInput;
-                    break;
+            cout << "Please enter their grade (1: Not Achieved, 2: Achieved, 3: Merit, 4: Excellence): ";
+            gradeInput = getInt(1, 4) - 1;
+
+            cout << "Enter term grade was obtained in (1-4): ";
+            termInput = getInt(1, 4);
+            // Checks subject & term hasn't already been added
+            int preexistingIdx = -1;
+            for (int subjectIdx = 0; subjectIdx < studentSubjects.size(); subjectIdx++) {
+                if (studentSubjects[subjectIdx][0] == subjectInput && studentSubjects[subjectIdx][2] == termInput) {
+                    preexistingIdx = subjectIdx;
                 }
             }
 
-            cout << "\n\nWould you like to edit more grades?\n'y'. Yes\n'n'. No\nSelect your option: ";
-            charInput = getChar("yn");
-            if (charInput == 'n')
-                gradesLoop = false;
+            if (preexistingIdx != -1) studentSubjects[preexistingIdx][1] = gradeInput;
+            else studentSubjects.push_back({ subjectInput, gradeInput, termInput });
+
+            cout << "\n\nWould you like to add more grades (y/n): ";
+            if (getChar("yn") == 'n') break;
         }
-        student newStudent = student(studentsName, studentsGender, studentsSubjects);
+        // Adds student to class
+        classroomRecords[recordClass].students.push_back(student(name, gender, studentSubjects));
 
         cout << "\n\nDo you want to create another student record (y/n): ";
-        charInput = getChar("yn");
-        if (charInput == 'n')
-            makingRecords = false;
+        if (getChar("yn") == 'n') break;
     }
 }
 
 // Edit a student record
 void editStudentRecord() {
+    int maxSize = 0;
+    string name;
+    bool editRecordLoop = true;
+    // Gets name of student to edit
+    cout << "\nPlease enter the student's name: ";
+    name = getSpaced();
 
-    bool recordsLoop = true;
+    bool studentFound = false;
+    // Finds student index
+    for (int classIdx = 0; classIdx < classroomRecords.size() && !studentFound; classIdx++) {
+        for (int studentIdx = 0; studentIdx < classroomRecords[classIdx].students.size() && !studentFound; studentIdx++) {
+            if (classroomRecords[classIdx].students[studentIdx].name == name) {
+                while (editRecordLoop) { // Changes student info
+                    cout << "What would you like to edit about " << name << "'s record?\n";
+                    cout << "1. Name\n2. Gender\n3. Grades\n4. Delete Record\n5. Cancel\n: ";
 
-    while (recordsLoop = true) {
-        int input;
-        char charInput;
-        int maxSize;
-        int recordClass, studentRecordNumber;
-        bool validLooping = true, editRecordLoop = true;
+                    switch (getInt(1, 5)) {
+                    case 1: // Name
+                        cout << "Please enter their new full name: ";
+                        name = getSpaced();
+                        classroomRecords[classIdx].students[studentIdx].name = name;
+                        break;
+                    case 2: // Gender
+                        cout << "What is " << name << "'s gender (1: Male, 2: Female, 3: Non-Binary): ";
+                        classroomRecords[classIdx].students[studentIdx].gender = getInt(1, 3) - 1;
+                    case 3: // Grade adding, deletion and editing
+                        while (true) {
+                            int subjectInput, gradeInput, termInput, gradeEditOption;
 
-        system("cls");
+                            cout << "1. Add/edit grade\n2. Delete grade\n: ";
+                            gradeEditOption = getInt(1, 2);
+                            // Gets subject
+                            bool foundSubject;
+                            foundSubject = false;
+                            cout << "\nPlease choose a subject from below: ";
+                            for (int subjectIdx = 0; subjectIdx < subjectOrder.size(); subjectIdx++) {
+                                cout << "\n\t" << subjectIdx + 1 << ". " << subjectOrder[subjectIdx];
+                            }
+                            cout << "\n: ";
+                            subjectInput = getInt(1, 9) - 1;
+                            // Gets term
+                            cout << "Please enter a term (1-4): ";
+                            termInput = getInt(1, 4);
 
-        cout << "\nWho is the teacher of the student who's record you want to edit?";
-        for (int i = 0; i < classroomRecords.size(); i++) {
-            cout << "\n" << i + 1 << ". " << getTeacher(classroomRecords[i].classNumber); //Will print the teachers in a list for user to select
-            maxSize = i;
-        }
-        input = getInt(1, maxSize); // getInt receives input and checks if it is within the range listed 
-        
-        recordClass = input--;
+                            switch (gradeEditOption) {
+                            case 1: // Adding/editing grade
+                                cout << "Please enter a grade from below: " <<
+                                    "\n1. Not Achieved\n2. Achieved\n3. Merit\n4. Excellence\n: ";
+                                gradeInput = getInt(1, 4) - 1;
+                                // Applying changes if editing
+                                for (int i = 0; i < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); i++) {
+                                    if (classroomRecords[classIdx].students[studentIdx].subjectGrades[i][0] == subjectInput &&
+                                        classroomRecords[classIdx].students[studentIdx].subjectGrades[i][2] == termInput) {
+                                        classroomRecords[classIdx].students[studentIdx].subjectGrades[i][1] = gradeInput; // Replace grade for subject and term
+                                        foundSubject = true;
+                                        break;
+                                    }
+                                }
+                                // Applying changes if adding
+                                if (!foundSubject) {
+                                    classroomRecords[classIdx].students[studentIdx].subjectGrades.push_back({ subjectInput, gradeInput, termInput });
+                                    cout << "Added grade!";
+                                } else cout << "Updated grade!";
+                                break;
+                            case 2: // Delete grade
+                                for (int i = 0; i < classroomRecords[classIdx].students[studentIdx].subjectGrades.size(); i++) {
+                                    if (classroomRecords[classIdx].students[studentIdx].subjectGrades[i][0] == subjectInput &&
+                                        classroomRecords[classIdx].students[studentIdx].subjectGrades[i][2] == termInput) {
+                                        classroomRecords[classIdx].students[studentIdx].subjectGrades.erase(
+                                            classroomRecords[classIdx].students[studentIdx].subjectGrades.begin() + i
+                                        );
+                                        foundSubject = true;
+                                        break;
+                                    }
+                                }
 
-        cout << "\nSelect out of the following students who's record you'd like to edit";
-        for (int i = 0; i < classroomRecords[input].students.size(); i++) {
-            cout << "\n" << i + 1 << ". " << classroomRecords[recordClass].students[i].name; //Will print the classrooms in a list for user to select
-            maxSize = i;
-        }
-        input = getInt(1, maxSize);
-        studentRecordNumber = input--;
+                                if (!foundSubject) cout << "Unable to find grade!";
+                                else cout << "Deleted grade!";
+                                break;
+                            }
 
-        string recordPrintName = classroomRecords[recordClass].students[studentRecordNumber].name; // Saves student name so it can always be printed
-        while (editRecordLoop = true) {
-
-
-            cout << "What would you like to edit about " << recordPrintName << "'s record?\n";
-            cout << "1. Name\n2. Gender\n3. Grades\n4. Delete Record\n5. Exit\n\nSelect your option: ";
-            input = getInt(1, 5);
-
-            switch (input) {
-            case 1:
-                cout << "\n\nWhat is the first and last name?\n";
-                recordPrintName = getSpaced();
-                classroomRecords[recordClass].students[studentRecordNumber].name = recordPrintName;
-                break;
-            case 2:
-                cout << "\n\nWhat is " << recordPrintName << "'s gender?";
-                cout << "\n1. Male\n2. Female\n3. Non-Binary\n\nSelect your option: ";
-                input = getInt(1, 3) - 1;
-                classroomRecords[recordClass].students[studentRecordNumber].gender = input;
-            case 3:
-                bool gradesLoop;
-                gradesLoop = true;
-                while (gradesLoop = true) {
-                    int subjectInput;
-                    int gradesInput;
-
-                    // Get target subject
-                    cout << "\n\nWhat subject's grade do you want to edit?";
-
-                    for (int subjectIdx = 0; subjectIdx < subjectOrder.size(); subjectIdx++) {
-                        cout << "\n" << subjectIdx + 1 << ". " << subjectOrder[subjectIdx];
-                    }
-                    cout << "\n: ";
-                    subjectInput = getInt(1, 9) - 1;
-
-                    cout << "\n\nWhat was the grade did " << recordPrintName << " get?";
-                    cout << "\n1. Not Achieved\n2. Achieved\n3. Merit\n4. Excellence";
-                    cout << "\n\nSelect your option: ";
-                    gradesInput = getInt(1, 4)-1;
-                    for (int i = 0; i < classroomRecords[recordClass].students[studentRecordNumber].subjectGrades.size(); i++) { // Write student grade in a subject to a Vector
-                        if (classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][0] == subjectInput) {
-                            classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i][1] = gradesInput;
-                            break;
+                            cout << "\n\nWould you like to edit more grades (y/n): ";
+                            if (getChar("yn") == 'n') break;
                         }
+                        break;
+                    case 4: // Delete student
+                        cout << "\n\n\t!WARNING!\nOnce the student record has been deleted it cannot be recovered.\nDo you wish to continue (y/n): ";
+                        if (getChar("yn") == 'y') {
+                            cout << "\n" << name << "'s record has been deleted.";
+                            classroomRecords[classIdx].students.erase(classroomRecords[classIdx].students.begin() + classIdx); // Deletes the vector data matching the inputted variables
+                        }
+                        break;
+                    case 5: // Cancels editing
+                        editRecordLoop = false;
+                        break;
                     }
 
-                    cout << "\n\nWould you like to edit more grades?\n'y'. Yes\n'n'. No\nSelect your option: ";
-                    charInput = getChar("yn");
-                    if (charInput == 'n')
-                        gradesLoop = false;
+                    cout << "\n\nWould you like to continue editting " << name << "'s record (y/n): ";
+                    if (getChar("yn") == 'n') break;
                 }
-            case 4:
-                char charInput;
-                cout << "\n\n\t!WARNING!\nOnce the student record has been deleted it cannot be recovered.\nDo you wish to continue?\n'y'. Yes\n'n'. No\n";
-                charInput = getChar("yn");
-                if (charInput == 'y') {
-                    cout << "\n\nDo you want to delete " << recordPrintName << "'s record?\nThis cannot be undone.\n'y'. Yes\n'n'. No\n";
-                    charInput = getChar("yn");
-                    if (charInput == 'y') {
-                        cout << "\n" << recordPrintName << "'s record has been deleted.";
-                        classroomRecords[recordClass].students.erase(classroomRecords[recordClass].students.begin() + recordClass); // Deletes the vector data matching the inputed variables
-                    }
-                }
-                break;
-            case 5:
-                editRecordLoop = false;
-                break;
+                studentFound = true;
             }
-
-            cout << "\n\nWould you like to continue editting " << recordPrintName << " record?";
-            cout << "\n1.Yes\n2.No\nSelect your option : ";
-            input = getInt(1, 2);
-            if (input == 2)
-                editRecordLoop = false;
         }
-        cout << "\n\nWould you like to edit another students record?";
-        cout << "\n1.Yes\n2.No\nSelect your option : ";
-        input = getInt(1, 2);
-        if (input == 2)
-            recordsLoop = false;
     }
+    if (!studentFound) cout << "Unable to find student!";
+    cout << "\nWould you like to edit another students record (y/n): ";
+    if (getChar("yn") == 'y') editStudentRecord();
+    return;
 }
 
 // View Record
 void viewRecord() {
-
-    int input, maxI, recordClass, studentRecordNumber;
+    int maxI = 0, recordClass, studentRecordNumber;
     string viewRecordName, viewRecordClass, studentGradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence" };
-    char viewRecordGender, charInput;
-    bool looping = true;
 
-    while (looping = true) {
-        cout << "\nWho is the teacher of the student whos record you want to edit?";
+    while (true) { // Allows for viewing of multiple students
+        cout << "\nWhat class is your student in?";
+        // Selects class
         for (int i = 0; i < classroomRecords.size(); i++) {
-            cout << "\n" << i + 1 << ". " << getTeacher(classroomRecords[i].classNumber); //Will print the classrooms in a list for user to select
-            maxI = i;
+            cout << "\n Class No." << classroomRecords[i].classNumber << " - " << getTeacher(classroomRecords[i].classNumber);
+            maxI = i + 1;
         }
-        input = getInt(1, maxI);
-        recordClass = input--;
-
-        cout << "\nSelect out of the following students whos record you'd like to edit";
-        for (int i = 0; i < classroomRecords[input].students.size(); i++) {
+        cout << "\n: ";
+        recordClass = getInt(1, maxI) - 1;
+        // Selects student in class
+        cout << "\nWhich student do you wish to view?";
+        for (int i = 0; i < classroomRecords[recordClass].students.size(); i++) {
             cout << "\n" << i + 1 << ". " << classroomRecords[recordClass].students[i].name;
-            maxI = i;
+            maxI = i + 1;
         }
-        input = getInt(1, maxI);
-        studentRecordNumber = input--;
+        cout << "\n: ";
+        studentRecordNumber = getInt(1, maxI) - 1;
         viewRecordName = classroomRecords[recordClass].students[studentRecordNumber].name;
-
-        cout << "\n\n\nCurrently viewing " << viewRecordName << "'s Record:";
-        cout << "\n\nName: " << viewRecordName;
-        viewRecordGender = classroomRecords[recordClass].students[studentRecordNumber].gender;
-        cout << "\nGender: ";
-        switch (viewRecordGender) {
+        // Displays student general information
+        cout << "\n\nCurrently viewing " << viewRecordName << "'s Record:";
+        cout << "\nName: " << viewRecordName << "\nGender: ";
+        switch (classroomRecords[recordClass].students[studentRecordNumber].gender) {
         case 0:
             cout << "Male";
+            break;
         case 1:
             cout << "Female";
+            break;
         case 2:
             cout << "Non-binary";
+            break;
         }
-
-        for (int i = 0; i < classroomRecords[recordClass].students[studentRecordNumber].subjectGrades.size(); i++) { //Print all the recorded grades
+        // Displays student grades
+        for (int i = 0; i < classroomRecords[recordClass].students[studentRecordNumber].subjectGrades.size(); i++) {
             vector<int> subjectGrade = classroomRecords[recordClass].students[studentRecordNumber].subjectGrades[i];
             cout << "\n" << subjectOrder[subjectGrade[0]] << ": " << studentGradeOptions[subjectGrade[1]] <<
                 " - Term No." << subjectGrade[2];
         }
-        cout << "\n\nWould you like to view another record?\n'y'. Yes\n'n'. No\n";
-        charInput = getChar("yn");
-        if (charInput == 'n')
-            looping = false;
+        cout << "\nWould you like to view another record (y/n): ";
+        if (getChar("yn") == 'n') break;
+    }
+}
+
+// Teacher controls menu
+void teacherMenu(string name) {
+    system("cls");
+    cout << "Welcome back " << name << "!";
+    while (true) {
+        cout << "\n1. Add student\n2. Edit student\n3. View student\n4. Logout\n: ";
+        switch (getInt(1, 4)) {
+        case 1: // Add
+            recordStudent();
+            saveSchool();
+            break;
+        case 2: // Edit
+            editStudentRecord();
+            saveSchool();
+            break;
+        case 3: // View
+            viewRecord();
+            break;
+        case 4: // Logout
+            return;
+        }
     }
 }
 
@@ -1170,19 +1201,20 @@ void adminMenu(string username) {
         // Control options
         int adminOption;
         cout << "\n1. View class record/s\n" <<
-            "2. Update class\n" <<
+            "2. Update, add, and delete classes\n" <<
             "3. View parent record/s\n" <<
             "4. Update parent record\n" <<
             "5. View student record/s\n" <<
             "6. Update student record\n" <<
             "7. Update events\n" << 
             "8. Update term dates\n" <<
-            "9. Logout\n" <<
+            "9. Update school info\n" <<
+            "10. Logout\n" <<
             ": ";
-        adminOption = getInt(1, 9);
+        adminOption = getInt(1, 10);
         // Individual option code
         switch (adminOption) {
-            // View classroom records
+        // View classroom records
         case 1:
             if (classroomRecords.size() == 0) {
                 cout << "Alert! No classes exist!";
@@ -1227,7 +1259,7 @@ void adminMenu(string username) {
                 }
             }
             break;
-            // Update class record
+        // Update class record
         case 2:
             if (classroomRecords.size() == 0) {
                 cout << "Alert! No classes exist!";
@@ -1319,7 +1351,7 @@ void adminMenu(string username) {
                 break;
             }
             break;
-            // View parent records
+        // View parent records
         case 3:
             fileIn.open("parentAccounts.csv");
             if (!fileIn.is_open()) {
@@ -1426,7 +1458,8 @@ void adminMenu(string username) {
                 fileIn.close();
                 break;
             }
-            // Update parent record
+            break;
+        // Update parent record
         case 4:
             fileIn.open("parentAccounts.csv");
             if (!fileIn.is_open()) {
@@ -1561,7 +1594,7 @@ void adminMenu(string username) {
             }
             fileOut.close();
             break;
-            // View student records
+        // View student records
         case 5:
             // View options
             int studentRecordViewOption;
@@ -1733,8 +1766,10 @@ void adminMenu(string username) {
                 else cout << "\nNo students found under criteria!" << endl;
                 break;
             }
-            // Update student records
+            break;
+        // Update student records
         case 6:
+            editStudentRecord();
             break;
         // Update events
         case 7:
@@ -1826,56 +1861,33 @@ void adminMenu(string username) {
             cout << "Update successful!\n";
             saveSchool();
             break;
-        // Return to main menu
+        // Update school info
         case 9:
+            cout << "1. Change name\n2. Change email\n3. Change phone number\n4. Cancel\n: ";
+            switch (getInt(1, 5)) {
+            case 1:
+                cout << "Enter new school name: ";
+                schoolName = getSpaced();
+                break;
+            case 2:
+                cout << "Enter new school email: ";
+                schoolEmailAddress = getSpaced();
+                break;
+            case 3:
+                cout << "Enter new phone number: ";
+                schoolPhoneNumber = getSpaced();
+                break;
+            case 4:
+                cout << "Change terminated!";
+                continue;
+            }
+            saveSchool();
+            break;
+        // Return to main menu
+        case 10:
             system("cls");
             return;
         }
-    }
-}
-
-// Creates a student record (Admin)
-void adminRecordStudent() {
-    bool makingRecords = true;
-
-    while (makingRecords = true) {
-
-        bool loopAgain = true;
-        string studentsName;
-        int studentsGender, subject, subjectGrade, control;
-        vector<vector<int>> studentsSubjects; // Creates vectors within a vector that allows us to easily transfer data back to the structure
-        vector<int> newSubject; // This allows us to store the subject and the grade under one variable
-
-        system("cls"); // Clears all previous code in termonal to avoid screen clutter
-
-        cout << "\nWhat is the students full name: ";
-        studentsName = getSpaced();
-
-        cout << "\nWhat is the students gender (1. Male, 2. Female, 3. Other): ";
-        studentsGender = getInt(1, 4);
-        for (subject = 0; subject < 3; subject++) {
-            cout << "\n" << 3 - subject << " subjects left to register.";
-            switch (subject) {
-            case 0:
-                cout << "\nCurrently registering Maths. ";
-            case 1:
-                cout << "\nCurrently registering English. ";
-            case 2:
-                cout << "\nCurrently registering History. ";
-            }
-            cout << "What was " << studentsName << "'s grade (0:NA, 1:A, 2:M, 3:E): ";
-            subjectGrade = getInt(0, 3);
-          
-            newSubject.push_back(subject);
-            newSubject.push_back(subjectGrade);
-            studentsSubjects.push_back(newSubject);
-        }
-        student newStudent = student(studentsName, studentsGender, studentsSubjects);
-
-        cout << "\n\nDo you want to create another student record (1. Yes, 2. No):";
-        control = getInt(1, 2);
-        if (control != 1)
-            makingRecords = false;
     }
 }
 
@@ -2023,106 +2035,76 @@ void adminLogin()
 // School contact info viewing
 void contactInfo()
 {
-    cout << "+------------------------------+\n";
-    cout << "Mebee School Contact Information\n";
-    cout << "+------------------------------+\n";
-    cout << schoolName << endl;
-    cout << schoolAddress << endl;
-    cout << schoolPhoneNumber << endl;
-    cout << schoolEmailAddress << endl;
+    cout << "+------------------------------+\n"
+         << "Mebee School Contact Information\n"
+         << "+------------------------------+\n"
+         << schoolName << "\n"
+         << schoolAddress << "\n"
+         << schoolPhoneNumber << "\n"
+         << schoolEmailAddress << endl;
 }
 
 // Event info viewing
 void functionsEvents()
 {
-    int functionsEventsInput;
+    cout << "\nMebee School Recent and Upcoming Events\n\n"
+         << "Please choose one of the options below:\n"
+         << "1. Recent Functions & Events\n2. Upcoming Functions & Events\n: ";
 
-    cout << "\nMebee School Recent and Upcoming Events\n\n";
-    cout << "Please choose one of the options below:\n";
-    cout << "1. Recent Functions & Events\n2. Upcoming Functions & Events\n";
-    functionsEventsInput = getInt(1, 2);
-    cout << endl;
-
-    switch (functionsEventsInput)
-    {
-    case 1:
-        cout << "+-------------------------+\n";
-        cout << "Recent Mebee School Events\n";
-        cout << "+-------------------------+\n";
+    if (getInt(1, 2) == 1) {
+        cout << "\n+-------------------------+\n"
+            << "Recent Mebee School Events\n"
+            << "+-------------------------+\n";
         //output recentEvents vector
         for (int i = 0; i < recentEvents.size(); i++) {
-            for (int j = 0; j < recentEvents[i].size(); j++)
-                cout << recentEvents[i][j] << " ";
-            cout << endl;
+            cout << recentEvents[i][0] << " - " << recentEvents[i][1] << endl;
         }
-        break;
-    case 2:
-        cout << "+---------------------------+\n";
-        cout << "Upcoming Mebee School Events\n";
-        cout << "+---------------------------+\n";
+    } else {
+        cout << "\n+---------------------------+\n"
+             << "Upcoming Mebee School Events\n"
+             << "+---------------------------+\n";
         //output upcomingEvents vector
         for (int i = 0; i < upcomingEvents.size(); i++) {
-            for (int j = 0; j < upcomingEvents[i].size(); j++)
-                cout << upcomingEvents[i][j] << " ";
-            cout << endl;
+            cout << upcomingEvents[i][0] << " - " << upcomingEvents[i][1] << endl;
         }
-        break;
     }
 }
 
 // Date info viewing
 void importantDates()
 {
-    int importantDateInput;
-    cout << "Choose an option to view\n";
-    cout << "1. Term 1\n2. Term 2\n3. Term 3\n4. Term 4\n";
-    importantDateInput = getInt(1, 4);
+    cout << "Choose an option to view\n"
+         << "1. Term 1\n2. Term 2\n3. Term 3\n4. Term 4\n: ";
 
-    switch (importantDateInput)
+    switch (getInt(1, 4))
     {
     case 1:
-        cout << "+---------------------------+\n";
-        cout << "           Term One          \n";
-        cout << "+---------------------------+\n";
+        cout << "+---------------------------+\n"
+             << "           Term One          \n"
+             << "+---------------------------+\n";
         //output term 1 vector
-        for (int i = 0; i < term1Dates.size(); i++) {
-            for (int j = 0; j < term1Dates[i].size(); j++)
-                cout << term1Dates[i][j] << "";
-            cout << endl;
-        }
+        for (int i = 0; i < term1Dates.size(); i++) cout << term1Dates[i] << endl;
         break;
     case 2:
-        cout << "+---------------------------+\n";
-        cout << "           Term Two          \n";
-        cout << "+---------------------------+\n";
+        cout << "+---------------------------+\n"
+             << "           Term Two          \n"
+             << "+---------------------------+\n";
         //output term 2 vector
-        for (int i = 0; i < term2Dates.size(); i++) {
-            for (int j = 0; j < term2Dates[i].size(); j++)
-                cout << term2Dates[i][j] << "";
-            cout << endl;
-        }
+        for (int i = 0; i < term2Dates.size(); i++) cout << term2Dates[i] << endl;
         break;
     case 3:
-        cout << "+---------------------------+\n";
-        cout << "          Term Three         \n";
-        cout << "+---------------------------+\n";
+        cout << "+---------------------------+\n"
+             << "          Term Three         \n"
+             << "+---------------------------+\n";
         //output term 3 vector
-        for (int i = 0; i < term3Dates.size(); i++) {
-            for (int j = 0; j < term3Dates[i].size(); j++)
-                cout << term3Dates[i][j] << "";
-            cout << endl;
-        }
+        for (int i = 0; i < term3Dates.size(); i++) cout << term3Dates[i] << endl;
         break;
     case 4:
-        cout << "+---------------------------+\n";
-        cout << "           Term Four         \n";
-        cout << "+---------------------------+\n";
+        cout << "+---------------------------+\n"
+             << "           Term Four         \n"
+             << "+---------------------------+\n";
         //output term 4 vector
-        for (int i = 0; i < term4Dates.size(); i++) {
-            for (int j = 0; j < term4Dates[i].size(); j++)
-                cout << term4Dates[i][j] << "";
-            cout << endl;
-        }
+        for (int i = 0; i < term4Dates.size(); i++) cout << term4Dates[i] << endl;
         break;
     }
 }
@@ -2138,6 +2120,7 @@ int main()
 
     while (mainMenuActive == true)
     {
+        // Introduction menu
         cout << "\nWelcome to " << schoolName << "\n\n"
             << "Please choose an option from the menu\n"
             << "1. School Functions & Events\n"
@@ -2152,47 +2135,47 @@ int main()
 
         switch (startPageInput)
         {
-        case 1:
+        case 1: // View events
             functionsEvents();
             break;
-        case 2:
+        case 2: // View dates
             importantDates();
             break;
-        case 3:
+        case 3: // Parent signin/up
             cout << "Would you like to register or login?\n";
             cout << "1. Register\n2. Login\n: ";
             parentInput = getInt(1, 2);
             switch (parentInput)
             {
-            case 1:
+            case 1: // Signup
                 parentRegister();
                 break;
-            case 2:
+            case 2: // Signin
                 parentLogin();
                 break;
             }
             break;
-        case 4:
+        case 4: // Teacher signin/up
             cout << "Would you like to register or login?\n";
             cout << "1. Register\n2. Login\n: ";
             teacherInput = getInt(1, 2);
             switch (teacherInput)
             {
-            case 1:
+            case 1: // Signup
                 teacherRegister();
                 break;
-            case 2:
+            case 2: // Signin
                 teacherLogin();
                 break;
             }
             break;
-        case 5:
+        case 5: // Admin login
             adminLogin();
             break;
-        case 6:
+        case 6: // View contact information
             contactInfo();
             break;
-        case 7:
+        case 7: // Exit
             cout << "You have chosen to exit the program, goodbye!\n";
             return 0;
         }
