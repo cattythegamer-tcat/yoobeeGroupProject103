@@ -114,50 +114,18 @@ vector<string> subjectOrder = {
     "Music"
 };
 
-// Will be sorted by date
+// General, event, & date info loaded from files
 vector<vector<string>> recentEvents = {};
 
 vector<vector<string>> upcomingEvents = {};
 
-vector<string> term1Dates = {
-    "Term 1: 3rd February - 14th April\n",
-    "Tuesday 1st February       Teacher only day",
-    "Wednesday 2nd February     Teacher only day",
-    "Thursday 3rd February      Learning conferences",
-    "Friday 4th February        Learning conferences",
-    "Monday 7th February        Waitangi Day observed",
-    "Tuesday 8th February       Term 1 classes start",
-    "Friday 15th April  	    Good Friday"
-};
+vector<string> term1Dates = {};
 
+vector<string> term2Dates = {};
 
-vector<string> term2Dates = {
-    "Term 2: 2nd May - 8th July 2022\n",
-    "Monday 2nd May 	           Term 2 classes start",
-    "Friday 3rd June            Teacher only day",
-    "Friday 8th July            Teacher only day",
-    "Public Holidays",
-    "Monday 6th June  	   Queens Birthday",
-    "Friday 24th  June          Matariki",
-    "Term 2 Holidays            Saturday 9th July - Sunday 24th July 2022\n"
-};
+vector<string> term3Dates = {};
 
-vector<string> term3Dates = {
-  "Term 3 25th July - 30th September 2022",
-  "Monday 25th July           Term 3 classes start",
-  "Friday 26th August         Teacher only day",
-  "No Public holidays",
-  "Term 3 Holidays            Saturday 1st October - Sunday 16th October 2022\n",
-};
-
-vector<string> term4Dates = {
-  "Term 4 17th October - 16th December 2022\n",
-  "Monday 17th October        Term 4 classes start",
-  "Friday 21st October        Teacher only",
-  "Public Holidays :\n",
-  "Monday 24th October        Labour Day",
-  "Term 4 Christmas school holidays start Saturday 17th December 2022\n",
-};
+vector<string> term4Dates = {};
 
 string schoolName = "";
 string schoolAddress = "Level 6, Wellington Railway Station\nWellington\nNew Zealand";
@@ -1261,10 +1229,6 @@ void adminMenu(string username) {
             break;
         // Update class record
         case 2:
-            if (classroomRecords.size() == 0) {
-                cout << "Alert! No classes exist!";
-                continue;
-            }
             // Variable setup
             int classUpdateOption, classNum;
             for (int classroomIdx = 0; classroomIdx < classroomRecords.size(); classroomIdx++) {
@@ -1276,6 +1240,11 @@ void adminMenu(string username) {
                 "3. Add class\n" <<
                 ": ";
             classUpdateOption = getInt(1, 3);
+            
+            if (classroomRecords.size() == 0 && classUpdateOption != 3) {
+				cout << "No classes exist, cancelling.";
+                continue;
+            }
             // All cases require a class number
             cout << "Enter class number: ";
             classNum = getInt();
@@ -1789,6 +1758,10 @@ void adminMenu(string username) {
             }
 
             if (eventManipOption != 1) { // When adding an event (Option 1), no need to select a pre-existing event
+                if ((eventGroup == 1 ? upcomingEvents.size() : recentEvents.size()) == 0) {
+                    cout << "No events in group exist, cancelling!";
+                    continue;
+                }
                 cout << "Select event from below: ";
                 // Displays all the events in time group
                 for (int eventIdx = 0; eventIdx < (eventGroup == 1 ? upcomingEvents.size() : recentEvents.size()); eventIdx++) {
@@ -1837,6 +1810,10 @@ void adminMenu(string username) {
             cout << "1. Add date\n2. Edit date\n3. Remove date\n: ";
             dateOption = getInt(1, 3);
             if (dateOption != 1) { // Gets target date (Not needed for adding)
+                if ((*termPtr).size() == 0) {
+                    cout << "No dates exist in term, cancelling!";
+                    continue;
+                }
                 cout << "Select date from below: ";
                 for (int dateIdx = 0; dateIdx < (*termPtr).size(); dateIdx++)
                     cout << "\n\t" << dateIdx + 1 << ". " << (*termPtr)[dateIdx];
@@ -1868,14 +1845,17 @@ void adminMenu(string username) {
             case 1:
                 cout << "Enter new school name: ";
                 schoolName = getSpaced();
+                cout << "Name change successful!";
                 break;
             case 2:
                 cout << "Enter new school email: ";
                 schoolEmailAddress = getSpaced();
+                cout << "Email change successful!";
                 break;
             case 3:
                 cout << "Enter new phone number: ";
                 schoolPhoneNumber = getSpaced();
+                cout << "Phone number change successful!";
                 break;
             case 4:
                 cout << "Change terminated!";
