@@ -68,29 +68,7 @@ struct child {
 };
 
 // Overarching student records storage
-vector<classroom> classroomRecords = {
-    // Placeholder values
-    /*
-    classroom(1, {
-        student("John Doe", 1, {{1, 1, 1}, {2, 2, 1}, {3, 3, 2}}),
-        student("Jane Doe", 1, {{1, 2, 1}, {2, 3, 1}, {3, 1, 2}}),
-        student("Jack Doe", 0, {{1, 3, 1}, {2, 1, 1}, {3, 2, 2}})
-        }
-    ),
-    classroom(2, {
-        student("Jill Doe", 1, {{1, 1, 2}, {2, 2, 1}, {3, 3, 3}}),
-        student("Jared Doe", 0, {{1, 2, 2}, {2, 3, 1}, {3, 1, 3}}),
-        student("Jenny Doe", 1, {{1, 3, 2}, {2, 1, 1}, {3, 2, 3}})
-        }
-    ),
-    classroom(3, {
-        student("Jasmine Doe", 1, {{1, 1, 1}, {2, 2, 4}, {3, 3, 1}}),
-        student("Jasper Doe", 0, {{1, 2, 1}, {2, 3, 4}, {3, 1, 1}}),
-        student("Josie Doe", 1, {{1, 3, 1}, {2, 1, 4}, {3, 2, 1}})
-        }
-    )
-    */
-};
+vector<classroom> classroomRecords = {};
 
 // Teachers
 vector<string> teachers = {}; // name, classroom number
@@ -133,7 +111,7 @@ string schoolPhoneNumber = "";
 string schoolEmailAddress = "";
 
 // Returns a user-inputted int that matches a given range
-int getInt(int lowerLimit = 0, int upperLimit = 100000) {
+int getInt(int lowerLimit = 1, int upperLimit = 100000) {
     string input;
     cin >> input;
     // Checks something has been inputted
@@ -260,34 +238,34 @@ void saveSchool() {
             if (recentIdx != 0) generalInfo << ",";
             generalInfo << recentEvents[recentIdx][0] << "," << recentEvents[recentIdx][1];
         }
+        generalInfo << endl;
         // Stores upcoming events vector
         for (int upcomingIdx = 0; upcomingIdx < upcomingEvents.size(); upcomingIdx++) {
-            if (upcomingIdx == 0) generalInfo << endl;
-            else generalInfo << ",";
+            if (upcomingIdx != 0) generalInfo << ",";
             generalInfo << upcomingEvents[upcomingIdx][0] << "," << upcomingEvents[upcomingIdx][1];
         }
+        generalInfo << endl;
         // Stores term 1 dates vector
         for (int termIdx = 0; termIdx < term1Dates.size(); termIdx++) {
-            if (termIdx == 0) generalInfo << endl;
-            else generalInfo << ",";
+            if (termIdx != 0) generalInfo << ",";
             generalInfo << term1Dates[termIdx];
         }
+        generalInfo << endl;
         //  Term 2
         for (int termIdx = 0; termIdx < term2Dates.size(); termIdx++) {
-            if (termIdx == 0) generalInfo << endl;
-            else generalInfo << ",";
+            if (termIdx != 0) generalInfo << ",";
             generalInfo << term2Dates[termIdx];
         }
+        generalInfo << endl;
         //  Term 3
         for (int termIdx = 0; termIdx < term3Dates.size(); termIdx++) {
-            if (termIdx == 0) generalInfo << endl;
-            else generalInfo << ",";
+            if (termIdx != 0) generalInfo << ",";
             generalInfo << term3Dates[termIdx];
         }
+        generalInfo << endl;
         //  Term 4
         for (int termIdx = 0; termIdx < term4Dates.size(); termIdx++) {
-            if (termIdx == 0) generalInfo << endl;
-            else generalInfo << ",";
+            if (termIdx != 0) generalInfo << ",";
             generalInfo << term4Dates[termIdx];
         }
     }
@@ -383,10 +361,17 @@ void loadSchool() {
         cout << "\nNo school data found, skipping.\n";
     } else {
         string infoRow;
+        schoolName = "";
+        schoolEmailAddress = "";
+        schoolPhoneNumber = "";
         int rowNum = 0;
         // Loads each line in file
         while (std::getline(generalInfo, infoRow)) {
             int dataPos = -1;
+            if (infoRow == "") {
+                rowNum++;
+                continue;
+            }
             infoRow = "," + infoRow;
             for (char& c : infoRow) {
                 if (c == ',') {
@@ -466,7 +451,33 @@ void parentRegister() {
     cout << "Enter email: ";
     email = getSpaced();
     cout << "Enter username: ";
-    username = getSpaced();
+    while (true) {
+        username = getSpaced();
+        // Stores all usernames in parentAccounts DB
+        vector<string> accounts;
+        // Fetches parentAccounts file for populating accounts Vector
+        ifstream parentAccounts;
+        parentAccounts.open("parentAccounts.csv");
+        if (!parentAccounts.is_open()) {
+            cout << "No parent accounts exist!";
+            return;
+        }
+        // Populates accounts Vector with all usernames
+        string fetchedInfo;
+        while (std::getline(parentAccounts, fetchedInfo)) {
+            string fetchedUsername;
+            for (char& c : fetchedInfo) {
+                if (c == ',') break;
+                fetchedUsername += c;
+            }
+            accounts.push_back(fetchedUsername);
+        }
+        parentAccounts.close();
+        if (std::find(accounts.begin(), accounts.end(), username) != accounts.end()) {
+            cout << "Username already exists, please enter a different username or contact the office.\nUsername: ";
+        }
+        else break;
+    }
 
     // Password
     do {
@@ -564,9 +575,22 @@ void parentRegister() {
 
 // Adds a new teacher
 void teacherRegister() {
+	// Confirms that a class exists that doesn't have a teacher
+    bool availableClass = false;
+    for (int classIdx = 0; classIdx < classroomRecords.size(); classIdx++) {
+        if (std::find(teachers.begin(), teachers.end(), std::to_string(classroomRecords[classIdx].classNumber)) == teachers.end()) {
+            availableClass = true;
+            break;
+        }
+    }
+	if (!availableClass) {
+		cout << "No classes were found that were missing a teacher, please get an admin to create a new class first!\n";
+		return;
+	}
+	// Teacher Variable Declariations
     string name, email, phoneNumber, username, password, rePassword;
     int gender, birthDay, birthMonth, birthYear, teachClassNum, teachYLvl;
-
+    // General teacher information
     cout << "What is your full name: ";
     name = getSpaced();
 
@@ -580,18 +604,28 @@ void teacherRegister() {
     phoneNumber = getSpaced();
 
     cout << "What is your classroom number: ";
-    while (true) {
+    while (true) { // Keeps asking for class number until valid
         teachClassNum = getInt();
         if (std::find(teachers.begin(), teachers.end(), std::to_string(teachClassNum)) != teachers.end()) {
             cout << "Teacher already assigned to class, please enter a different class number or contact the office.\nClass number: ";
             continue;
         }
+        bool classExists = false;
+        for (int classIdx = 0; classIdx < classroomRecords.size(); classIdx++) {
+            if (classroomRecords[classIdx].classNumber == teachClassNum) {
+                classExists = true;
+            }
+        }
+		if (!classExists) {
+			cout << "Class does not exist, please enter a different class number or contact the office.\nClass number: ";
+            continue;
+        }
         break;
     }
-
+    // Gets teacher's year level
     cout << "What year level do you teach: ";
-    teachYLvl = getInt();
-
+    teachYLvl = getInt(1, 13);
+    // Gets teacher's birthday
     cout << "Enter day of birth (1-31): ";
     birthDay = getInt(1, 31);
     cout << "Enter month of birth (1-12): ";
@@ -599,8 +633,34 @@ void teacherRegister() {
     cout << "Enter year of birth (1900-2022): ";
     birthYear = getInt(1900, 2022);
 
+	// Gets teacher username/password
     cout << "What will your username be: ";
-    username = getSpaced();
+    while (true) {
+		username = getSpaced();
+        // Stores all usernames in teacherAccount DB
+        vector<string> accounts;
+        // Fetches teacherAccounts file for populating accounts Vector
+        ifstream teacherAccounts;
+        teacherAccounts.open("teacherAccounts.csv");
+        if (!teacherAccounts.is_open()) {
+            cout << "No teacher accounts exist!";
+            return;
+        }
+        // Populates accounts Vector with all usernames
+        string fetchedInfo;
+        while (std::getline(teacherAccounts, fetchedInfo)) {
+            string fetchedUsername;
+            for (char& c : fetchedInfo) {
+                if (c == ',') break;
+                fetchedUsername += c;
+            }
+            accounts.push_back(fetchedUsername);
+        }
+        teacherAccounts.close();
+		if (std::find(accounts.begin(), accounts.end(), username) != accounts.end()) {
+			cout << "Username already exists, please enter a different username or contact the office.\nUsername: ";
+		} else break;
+    }
 
     while (true) {
         cout << "Please enter your password: ";
@@ -610,13 +670,13 @@ void teacherRegister() {
         if (password != rePassword) cout << "The passwords do no match. Try again\n";
         else break;
     }
-
+    // Creates hashed password
     string hashedPassword = username + password;
     SHA256 sha;
     sha.update(hashedPassword);
     uint8_t* digest = sha.digest();
     password = SHA256::toString(digest);
-
+	
     // Load parent account file
     ofstream teacherAccounts;
     teacherAccounts.open("teacherAccounts.csv", std::ios::app); // Appends new parent to end of file
@@ -654,7 +714,7 @@ void parentMenu(string name, string hashedPass) {
     // Load all parent account information from file
     while (true) {
         vector<vector<string>> loadedParentAccounts;
-        string parentUsername, parentName, fetchedParent, fetchedHash, password, rePassword;
+        string parentUsername, parentName, fetchedParent, fullName, password, rePassword;
         string username, email, gender, birthDay, birthMonth, birthYear, phoneNumber;
         vector<vector<string>> childrenInfo;
         // File stream declarations
@@ -667,7 +727,7 @@ void parentMenu(string name, string hashedPass) {
         // Finds parent account
         while (std::getline(fileIn, fetchedParent)) {
             // Seperates csv row for parent into seperate values
-            fetchedHash = "", username = "", email = "", gender = "", birthDay = "";
+            fullName = "", username = "", email = "", gender = "", birthDay = "";
             birthMonth = "", birthYear = "", phoneNumber = "";
             childrenInfo = {};
             int dataPos = 0; // dataPos used to determine which piece of info below loop is writing to.
@@ -684,7 +744,7 @@ void parentMenu(string name, string hashedPass) {
                 case 1: // Password (not needed)
                     continue;
                 case 2: // Parent full name
-                    fetchedHash += c;
+                    fullName += c;
                     break;
                 case 3: // Email
                     email += c;
@@ -715,7 +775,7 @@ void parentMenu(string name, string hashedPass) {
                 }
             }
             // If parent matches input, displays all found info on parent 
-            if (fetchedHash == parentName) break;
+            if (username == name) break;
         }
         fileIn.close();
         ofstream fileOut;
@@ -857,7 +917,7 @@ void parentMenu(string name, string hashedPass) {
         // View account information
         case 3:
             // General
-            cout << "Stored information for " << name <<
+            cout << "Stored information for " << fullName <<
                 ":\n\tUsername: " << username <<
                 "\n\tEmail: " << email <<
                 "\n\tGender: " << genderOptions[std::stoi(gender)] <<
@@ -887,7 +947,7 @@ void parentMenu(string name, string hashedPass) {
     return;
 }
 
-// Creates a student record (Admin)
+// Creates a student record
 void recordStudent() {
     if (classroomRecords.size() == 0) { // Checks there are classrooms loaded
         cout << "Alert! No classes exist, cannot add students!";
@@ -921,6 +981,14 @@ void recordStudent() {
             cout << "Alert: Class doesn't exist, please try again: ";
         }
         
+	    // Checks student name not already in class
+		for (int studentIdx = 0; studentIdx < classroomRecords[recordClass].students.size(); studentIdx++) {
+			if (classroomRecords[recordClass].students[studentIdx].name == name) {
+				cout << "Alert! Student already exists in class!";
+				return;
+			}
+		}
+
         // Student grade information
         cout << "Do you wish to add any subject grades to student (y/n): ";
         if (getChar("yn") == 'n') gradesLoop = false;
@@ -982,12 +1050,24 @@ void editStudentRecord() {
                     switch (getInt(1, 5)) {
                     case 1: // Name
                         cout << "Please enter their new full name: ";
-                        name = getSpaced();
+						// Checks name not already in class
+                        while (true) {
+							name = getSpaced();
+                            bool foundStudent = false;
+							for (int studentIdx = 0; studentIdx < classroomRecords[classIdx].students.size() && !foundStudent; studentIdx++) {
+								if (classroomRecords[classIdx].students[studentIdx].name == name) {
+									foundStudent = true;
+								}
+							}
+							if (foundStudent) cout << "Alert: Student name already exists in class, please try again: ";
+							else break;
+                        }
                         classroomRecords[classIdx].students[studentIdx].name = name;
                         break;
                     case 2: // Gender
                         cout << "What is " << name << "'s gender (1: Male, 2: Female, 3: Non-Binary): ";
                         classroomRecords[classIdx].students[studentIdx].gender = getInt(1, 3) - 1;
+                        break;
                     case 3: // Grade adding, deletion and editing
                         while (true) {
                             int subjectInput, gradeInput, termInput, gradeEditOption;
@@ -1190,7 +1270,7 @@ void adminMenu(string username) {
             }
             int classOption;
             cout << "Please enter the class number, or type \"0\" for a list of all class numbers: ";
-            classOption = getInt();
+            classOption = getInt(0, 100000);
             // Display all class numbers
             if (classOption == 0) {
                 cout << "Classes: " << classroomRecords[0].classNumber;
@@ -1314,6 +1394,19 @@ void adminMenu(string username) {
                 cout << "Deletion terminated.";
                 break;
             case 3: // Adds a new class - Populated later by assigned teacher/s
+                while (true) {
+                    bool foundClass = false;
+                    for (int classIdx = 0; classIdx < classroomRecords.size(); classIdx++) {
+                        if (classroomRecords[classIdx].classNumber == classNum) {
+                            foundClass = true;
+                            break;
+                        }
+                    }
+                    if (foundClass) {
+                        cout << "This number is already in use, please try again: ";
+                        classNum = getInt();
+                    } else break;
+                }
                 classroomRecords.push_back(classroom(classNum, {}));
                 saveSchool();
                 cout << "Added empty class No." << classNum;
@@ -1583,6 +1676,7 @@ void adminMenu(string username) {
                 for (int classIdx = 0; classIdx < classroomRecords.size() && !studentFound; classIdx++) {
                     for (int studentIdx = 0; studentIdx < classroomRecords[classIdx].students.size() && !studentFound; studentIdx++) {
                         if (classroomRecords[classIdx].students[studentIdx].name == studentName) {
+                            studentFound = true;
                             // Displays found student info
                             vector<string> caregiverInfosDups; // Initial version, which may contain repeated parent infos
                             vector<string> caregiverInfos; // Cleaned version, with only one instance of each parent
@@ -1633,7 +1727,6 @@ void adminMenu(string username) {
                                         ": " << caregiverInfosDups[caregiverIdx * 2 + 1];
                                 }
                             }
-                            studentFound = true;
                         }
                     }
                 }
@@ -1661,7 +1754,7 @@ void adminMenu(string username) {
                 grade--;
                 // Get target class
                 cout << "Enter class num (Or type \"0\" for all classes): ";
-                startingClassNum = getInt();
+                startingClassNum = getInt(0, 100000);
                 classLoopIdx = 0;
                 // Display all students that meet subject, grade, and class criteria
                 do { // Class loop
@@ -1924,7 +2017,7 @@ void parentLogin()
     }
     cout << ((attemptingSignin == 'n') ?
         "\nUnsuccessful - Login attempt terminated.\n" :
-        "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
+        "\nUnsuccessful - Too many sign-in attempts. Please try again later.\n");
 }
 
 // Teacher signin
@@ -1980,7 +2073,7 @@ void teacherLogin()
     }
     cout << ((attemptingSignin == 'n') ?
         "\nUnsuccessful - Login attempt terminated.\n" :
-        "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
+        "\nUnsuccessful - Too many sign-in attempts. Please try again later.\n");
 }
 
 // Admin signin
@@ -2009,7 +2102,7 @@ void adminLogin()
     }
     cout << ((attempting == 'n') ?
         "\nUnsuccessful - Login attempt terminated.\n" :
-        "\nUnsuccesful - Too many signin attempts. Please try again later.\n");
+        "\nUnsuccessful - Too many sign-in attempts. Please try again later.\n");
 }
 
 // School contact info viewing
@@ -2035,6 +2128,7 @@ void functionsEvents()
         cout << "\n+-------------------------+\n"
             << "Recent Mebee School Events\n"
             << "+-------------------------+\n";
+        if (recentEvents.size() == 0) cout << "No recent events have occured.";
         //output recentEvents vector
         for (int i = 0; i < recentEvents.size(); i++) {
             cout << recentEvents[i][0] << " - " << recentEvents[i][1] << endl;
@@ -2043,6 +2137,7 @@ void functionsEvents()
         cout << "\n+---------------------------+\n"
              << "Upcoming Mebee School Events\n"
              << "+---------------------------+\n";
+        if (upcomingEvents.size() == 0) cout << "No upcoming events are happening.";
         //output upcomingEvents vector
         for (int i = 0; i < upcomingEvents.size(); i++) {
             cout << upcomingEvents[i][0] << " - " << upcomingEvents[i][1] << endl;
@@ -2062,6 +2157,7 @@ void importantDates()
         cout << "+---------------------------+\n"
              << "           Term One          \n"
              << "+---------------------------+\n";
+        if (term1Dates.size() == 0) cout << "No date exist for term 1 yet.";
         //output term 1 vector
         for (int i = 0; i < term1Dates.size(); i++) cout << term1Dates[i] << endl;
         break;
@@ -2069,6 +2165,7 @@ void importantDates()
         cout << "+---------------------------+\n"
              << "           Term Two          \n"
              << "+---------------------------+\n";
+        if (term2Dates.size() == 0) cout << "No date exist for term 2 yet.";
         //output term 2 vector
         for (int i = 0; i < term2Dates.size(); i++) cout << term2Dates[i] << endl;
         break;
@@ -2076,6 +2173,7 @@ void importantDates()
         cout << "+---------------------------+\n"
              << "          Term Three         \n"
              << "+---------------------------+\n";
+        if (term3Dates.size() == 0) cout << "No date exist for term 3 yet.";
         //output term 3 vector
         for (int i = 0; i < term3Dates.size(); i++) cout << term3Dates[i] << endl;
         break;
@@ -2083,6 +2181,7 @@ void importantDates()
         cout << "+---------------------------+\n"
              << "           Term Four         \n"
              << "+---------------------------+\n";
+        if (term4Dates.size() == 0) cout << "No date exist for term 4 yet.";
         //output term 4 vector
         for (int i = 0; i < term4Dates.size(); i++) cout << term4Dates[i] << endl;
         break;
