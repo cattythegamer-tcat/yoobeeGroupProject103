@@ -437,6 +437,35 @@ void loadSchool() {
 
 }
 
+// Event info viewing
+void functionsEvents()
+{
+    cout << "\nMebee School Recent & Upcoming Events/Notices\n\n"
+        << "Please choose one of the options below:\n"
+        << "1. Recent Functions, Events & Notices\n2. Upcoming Functions & Events\n: ";
+
+    if (getInt(1, 2) == 1) { // Recent events, functions, and notices
+        cout << "\n+-------------------------+\n"
+            << "Recent Mebee School Functions, Events & Notices\n"
+            << "+-------------------------+\n";
+        if (recentEvents.size() == 0) cout << "No recent events or notices have occured.";
+        // Output recentEvents vector
+        for (int i = 0; i < recentEvents.size(); i++) {
+            cout << recentEvents[i][0] << " - " << recentEvents[i][1] << endl;
+        }
+    }
+    else { // Upcoming events
+        cout << "\n+---------------------------+\n"
+            << "Upcoming Mebee School Events\n"
+            << "+---------------------------+\n";
+        if (upcomingEvents.size() == 0) cout << "No upcoming events are happening.";
+        // Output upcomingEvents vector
+        for (int i = 0; i < upcomingEvents.size(); i++) {
+            cout << upcomingEvents[i][0] << " - " << upcomingEvents[i][1] << endl;
+        }
+    }
+}
+
 // Adds a new parent
 void parentRegister() {
     // Parent variable declarations
@@ -489,7 +518,7 @@ void parentRegister() {
     } while (password != rePassword);
 
     // Personal details
-    cout << "Enter gender (1:Male, 2:Female, 3:Non-Binary): ";
+    cout << "Enter gender (1:Male, 2:Female, 3:Other): ";
     gender = getInt(1, 3);
     cout << "Enter day of birth (1-31): ";
     birthDay = getInt(1, 31);
@@ -594,7 +623,7 @@ void teacherRegister() {
     cout << "What is your full name: ";
     name = getSpaced();
 
-    cout << "What is your gender (1:Male, 2:Female, 3:Non-Binary): ";
+    cout << "What is your gender (1:Male, 2:Female, 3:Other): ";
     gender = getInt(1, 3);
 
     cout << "What is your email address: ";
@@ -707,7 +736,7 @@ void teacherRegister() {
 void parentMenu(string name, string hashedPass) {
     system("cls");
     // String arrays used to convert integers into their string counterparts
-    string genderOptions[3] = { "Male", "Female", "Non-Binary" };
+    string genderOptions[3] = { "Male", "Female", "Other" };
     string gradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence" };
 
     cout << "Welcome back " << name << "!";
@@ -749,7 +778,7 @@ void parentMenu(string name, string hashedPass) {
                 case 3: // Email
                     email += c;
                     break;
-                case 4: // Gender (0:Male, 1:Female, 2:Non-Binary)
+                case 4: // Gender (0:Male, 1:Female, 2:Other)
                     gender += c;
                     break;
                 case 5: // Day of birth
@@ -786,8 +815,9 @@ void parentMenu(string name, string hashedPass) {
         cout << "\n1. View children information\n" <<
             "2. Edit account\n" <<
             "3. View account information\n" <<
-            "4. Logout\n: ";
-        parentOption = getInt(1, 4);
+			"4. View events\n" <<
+            "5. Logout\n: ";
+        parentOption = getInt(1, 5);
         switch (parentOption) {
         // View child info
         case 1:
@@ -894,7 +924,7 @@ void parentMenu(string name, string hashedPass) {
                 cout << "Phone number change complete.";
                 break;
             case 5: //     gender
-                cout << "Enter new gender (1:Male, 2:Female, 3:Non-Binary): ";
+                cout << "Enter new gender (1:Male, 2:Female, 3:Other): ";
                 loadedParentAccounts[parentIdx][4] = std::to_string(getInt(1, 3) - 1);
                 cout << "Gender updated.";
                 break;
@@ -938,8 +968,11 @@ void parentMenu(string name, string hashedPass) {
                 }
             }
             break;
-        // Logout
         case 4:
+            functionsEvents();
+            break;
+        // Logout
+        case 5:
             return;
         }
     }
@@ -1065,7 +1098,7 @@ void editStudentRecord() {
                         classroomRecords[classIdx].students[studentIdx].name = name;
                         break;
                     case 2: // Gender
-                        cout << "What is " << name << "'s gender (1: Male, 2: Female, 3: Non-Binary): ";
+                        cout << "What is " << name << "'s gender (1: Male, 2: Female, 3: Other): ";
                         classroomRecords[classIdx].students[studentIdx].gender = getInt(1, 3) - 1;
                         break;
                     case 3: // Grade adding, deletion and editing
@@ -1147,7 +1180,12 @@ void editStudentRecord() {
             }
         }
     }
-    if (!studentFound) cout << "Unable to find student!";
+    if (!studentFound) {
+        cout << "Unable to find student!\nWould you like to add a new student instead (y/n): ";
+		if (getChar("yn") == 'y') {
+            recordStudent();
+		}
+    }
     cout << "\nWould you like to edit another students record (y/n): ";
     if (getChar("yn") == 'y') editStudentRecord();
     return;
@@ -1187,7 +1225,7 @@ void viewRecord() {
             cout << "Female";
             break;
         case 2:
-            cout << "Non-binary";
+            cout << "Other";
             break;
         }
         // Displays student grades
@@ -1244,7 +1282,7 @@ void adminMenu(string username) {
         SHA256 sha;
         uint8_t* digest;
         // String arrays used to convert integers into their string counterparts
-        string genderOptions[3] = { "Male", "Female", "Non-Binary" };
+        string genderOptions[3] = { "Male", "Female", "Other" };
         string gradeOptions[4] = { "Not Achieved", "Achieved", "Merit", "Excellence" };
         // Control options
         int adminOption;
@@ -1254,7 +1292,7 @@ void adminMenu(string username) {
             "4. Update parent record\n" <<
             "5. View student record/s\n" <<
             "6. Update student record\n" <<
-            "7. Update events\n" << 
+            "7. Update events/notices\n" << 
             "8. Update term dates\n" <<
             "9. Update school info\n" <<
             "10. Logout\n" <<
@@ -1465,7 +1503,7 @@ void adminMenu(string username) {
                         case 3: // Email
                             email += c;
                             break;
-                        case 4: // Gender (0:Male, 1:Female, 2:Non-Binary)
+                        case 4: // Gender (0:Male, 1:Female, 2:Other)
                             gender += c;
                             break;
                         case 5: // Day of birth
@@ -1610,7 +1648,7 @@ void adminMenu(string username) {
                 cout << "Phone number change complete.";
                 break;
             case 6: //     gender
-                cout << "Enter new gender (1:Male, 2:Female, 3:Non-Binary): ";
+                cout << "Enter new gender (1:Male, 2:Female, 3:Other): ";
                 loadedParentAccounts[parentIdx][4] = getInt(1, 3) - 1;
                 cout << "Gender updated.";
                 break;
@@ -1837,9 +1875,9 @@ void adminMenu(string username) {
         case 7:
             int eventManipOption, eventGroup, targetEvent; // Group being either upcoming or recent
             // Get event manipulation option
-            cout << "1. Add event\n" <<
-                "2. Update event\n" << // Essentially creates a new event, but at a pre-existing event location
-                "3. Remove event\n" <<
+            cout << "1. Add event/notice\n" <<
+                "2. Update event/notice\n" << // Essentially creates a new event, but at a pre-existing event location
+                "3. Remove event/notice\n" <<
                 "4. Shift upcoming event to recent event\n"
                 "5. Cancel\n: ";
             eventManipOption = getInt(1, 5);
@@ -1852,10 +1890,10 @@ void adminMenu(string username) {
 
             if (eventManipOption != 1) { // When adding an event (Option 1), no need to select a pre-existing event
                 if ((eventGroup == 1 ? upcomingEvents.size() : recentEvents.size()) == 0) {
-                    cout << "No events in group exist, cancelling!";
+                    cout << "No events/notices in group exist, cancelling!";
                     continue;
                 }
-                cout << "Select event from below: ";
+                cout << "Select event/notice from below: ";
                 // Displays all the events in time group
                 for (int eventIdx = 0; eventIdx < (eventGroup == 1 ? upcomingEvents.size() : recentEvents.size()); eventIdx++) {
                     cout << "\n\t" << eventIdx + 1 << ". " <<
@@ -1866,9 +1904,9 @@ void adminMenu(string username) {
             }
 
             if (eventManipOption == 1 || eventManipOption == 2) { // Gets new event information (For adding & editing events)
-                cout << "Enter new event name: ";
+                cout << "Enter new event/notice name: ";
                 eventName = getSpaced();
-                cout << "Enter event description below:\n";
+                cout << "Enter event/notice description below:\n";
                 eventDescription = getSpaced();
             }
             // Applies changes to event vector
@@ -2117,34 +2155,6 @@ void contactInfo()
          << schoolEmailAddress << endl;
 }
 
-// Event info viewing
-void functionsEvents()
-{
-    cout << "\nMebee School Recent and Upcoming Events\n\n"
-         << "Please choose one of the options below:\n"
-         << "1. Recent Functions & Events\n2. Upcoming Functions & Events\n: ";
-
-    if (getInt(1, 2) == 1) {
-        cout << "\n+-------------------------+\n"
-            << "Recent Mebee School Events\n"
-            << "+-------------------------+\n";
-        if (recentEvents.size() == 0) cout << "No recent events have occured.";
-        //output recentEvents vector
-        for (int i = 0; i < recentEvents.size(); i++) {
-            cout << recentEvents[i][0] << " - " << recentEvents[i][1] << endl;
-        }
-    } else {
-        cout << "\n+---------------------------+\n"
-             << "Upcoming Mebee School Events\n"
-             << "+---------------------------+\n";
-        if (upcomingEvents.size() == 0) cout << "No upcoming events are happening.";
-        //output upcomingEvents vector
-        for (int i = 0; i < upcomingEvents.size(); i++) {
-            cout << upcomingEvents[i][0] << " - " << upcomingEvents[i][1] << endl;
-        }
-    }
-}
-
 // Date info viewing
 void importantDates()
 {
@@ -2202,7 +2212,7 @@ int main()
         // Introduction menu
         cout << "\nWelcome to " << schoolName << "\n\n"
             << "Please choose an option from the menu\n"
-            << "1. School Functions & Events\n"
+            << "1. School Functions, Events & Notices\n"
             << "2. Term Dates\n"
             << "3. Parent Register & Login\n"
             << "4. Teacher Register & Login\n"
