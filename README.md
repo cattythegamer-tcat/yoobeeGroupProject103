@@ -1,14 +1,14 @@
-Admin accounts (Username - Password)
-Jayden letmein123
-Conor smurf01
-Kevin defaultGreen
-
-Teacher accounts
-Orwell 1984
-Tesla v1
-Beth immortal
-
-Parent accounts
-Josh john
-Liz qwerty
-Henry brit
+<b>Admin accounts</b> <i>(Username - Password)</i><br />
+Jayden letmein123<br />
+Conor smurf01<br />
+Kevin defaultGreen<br />
+<br />
+<b>Teacher accounts</b><br />
+Orwell 1984<br />
+Tesla v1<br />
+Beth immortal<br />
+<br />
+<b>Parent accounts</b><br />
+Josh john<br />
+Liz qwerty<br />
+Henry brit<br />
