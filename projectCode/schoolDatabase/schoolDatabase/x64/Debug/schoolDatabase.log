@@ -1,8 +1,17 @@
 ﻿  schoolDatabase.cpp
   The contents of <filesystem> are available only with C++17 or later.
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1323,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1335,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1782,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1903,104): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1952,59): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1325,87): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1337,125): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1784,56): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1905,104): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\schoolDatabase.cpp(1954,59): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+  SHA256.cpp
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\SHA256.cpp(123,15): warning C4244: '=': conversion from 'uint64_t' to 'uint8_t', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\SHA256.cpp(124,24): warning C4244: '=': conversion from 'uint64_t' to 'uint8_t', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\SHA256.cpp(125,24): warning C4244: '=': conversion from 'uint64_t' to 'uint8_t', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\SHA256.cpp(126,24): warning C4244: '=': conversion from 'uint64_t' to 'uint8_t', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\SHA256.cpp(127,24): warning C4244: '=': conversion from 'uint64_t' to 'uint8_t', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\SHA256.cpp(128,24): warning C4244: '=': conversion from 'uint64_t' to 'uint8_t', possible loss of data
+C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\schoolDatabase\SHA256.cpp(129,24): warning C4244: '=': conversion from 'uint64_t' to 'uint8_t', possible loss of data
+  Generating Code...
   schoolDatabase.vcxproj -> C:\Users\ccporirua\Documents\GitHub\yoobeeGroupProject103\projectCode\schoolDatabase\x64\Debug\schoolDatabase.exe

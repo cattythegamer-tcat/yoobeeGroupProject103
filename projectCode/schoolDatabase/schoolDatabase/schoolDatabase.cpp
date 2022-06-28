@@ -973,6 +973,7 @@ void parentMenu(string name, string hashedPass) {
             break;
         // Logout
         case 5:
+            system("cls");
             return;
         }
     }
@@ -1258,6 +1259,7 @@ void teacherMenu(string name) {
             viewRecord();
             break;
         case 4: // Logout
+            system("cls");
             return;
         }
     }
